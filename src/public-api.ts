@@ -2,8 +2,12 @@
  * Public API Surface of descriptor
  */
 export {
+  // Abstract.
+  CommonDescriptor,
+  // Class.
   AccessorDescriptor,
   DataDescriptor,
   Descriptor,
-  Descriptors
+  Descriptors,
+  PropertyDescriptorChain,
 } from './lib';
