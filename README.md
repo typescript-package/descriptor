@@ -16,11 +16,7 @@
 
 **Version:** v0.0.1-beta
 
-A lightweight TypeScript library for property descriptor.
-
-## Overview
-
-- **Defining** the various type of property descriptors.
+A **lightweight** TypeScript library for property descriptor.
 
 ## Table of contents
 
