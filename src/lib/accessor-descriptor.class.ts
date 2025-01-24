@@ -1,7 +1,7 @@
 // Abstract,
 import { CommonDescriptor } from './common-descriptor.abstract';
 // Interface.
-import { ThisAccessorPropertyDescriptor, AccessorPropertyDescriptor } from '@typedly/descriptor';
+import { ThisAccessorPropertyDescriptor } from '@typedly/descriptor';
 // Type.
 import { ValidationCallback } from '@typedly/callback';
 /**
@@ -86,13 +86,12 @@ export class AccessorDescriptor<
    * @param {?PropertyName} [key] 
    */
   constructor(
-    { configurable, enumerable, get, set }: AccessorPropertyDescriptor<Value> = {},
+    { configurable, enumerable, get, set }: ThisAccessorPropertyDescriptor<Value, Obj> = {},
     object?: Obj,
     key?: PropertyName
   ) {
     super({ configurable, enumerable });
     delete this.get, delete this.set;
-
     typeof get === 'function' && (this.get = get);
     typeof set === 'function' && (this.set = set);
   }
