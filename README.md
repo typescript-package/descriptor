@@ -14,7 +14,7 @@
 [![GitHub issues][typescript-package-badge-issues]][typescript-package-issues]
 [![GitHub license][typescript-package-badge-license]][typescript-package-license]
 
-**Version:** v0.0.1-beta
+**Version:** v1.0.0-beta
 
 A **lightweight** TypeScript library for property descriptor.
 
@@ -45,6 +45,14 @@ npm install @typescript-package/descriptor --save-peer
 
 ```typescript
 import {
+  // Abstract.
+  CommonDescriptor,
+  // Class.
+  AccessorDescriptor,
+  DataDescriptor,
+  Descriptor,
+  Descriptors,
+  PropertyDescriptorChain,
 } from '@typescript-package/descriptor';
 ```
 
