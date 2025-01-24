@@ -227,7 +227,7 @@ export class Descriptor<
     super({ configurable, enumerable });
 
     // Deletes the PropertyDescriptor properties.
-    delete this.get, this.set, this.value, this.writable;
+    delete this.get, delete this.set, delete this.value, delete this.writable;
 
     get && (this.get = get);
     set && (this.set = set);
