@@ -16,9 +16,11 @@ export class PropertyDescriptorChain<
   }
 
   #descriptor = new Array<PropertyDescriptor>();
+  #key: Key;
+  #object: Obj;
 
   /**
-   * Creates an instance of `PropDescriptor`.
+   * Creates an instance of `PropertyDescriptorChain`.
    * @param object 
    * @param key 
    */
@@ -29,15 +31,17 @@ export class PropertyDescriptorChain<
     if (!key) {
       throw new TypeError('Invalid key provided.');
     }
-    this.add(object, key);
+    this.#key = key;
+    this.#object = object;
+    this.add();
   }
 
-  public add(object: Obj, key: Key) {
-    const descriptor = Descriptor.fromProperty(object, key as any);
+  public add() {
+    const descriptor = Descriptor.fromProperty(this.#object, this.#key as any);
     if (descriptor) {
       this.#descriptor.push(descriptor);
     } else {
-      throw new Error(`Descriptor not found for key: ${String(key)}`);
+      throw new Error(`Descriptor not found for key: ${String(this.#key)}`);
     }
   }
 
