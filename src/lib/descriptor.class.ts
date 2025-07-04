@@ -6,22 +6,21 @@ import { DataDescriptor } from './data-descriptor.class';
 // Interface.
 import { DataPropertyDescriptor } from '@typedly/descriptor';
 // Type.
-import { AnyPropertyDescriptor } from '@typedly/descriptor';
-import { ObjectPropertyDescriptors } from '@typedly/descriptor';
+import { ObjectPropertyDescriptors, StrictPropertyDescriptor } from '@typedly/descriptor';
 import { ValidationCallback } from '@typedly/callback';
 import { ThisAccessorPropertyDescriptor } from '@typedly/descriptor';
 /**
  * @description
  * @export
  * @class Descriptor
- * @template {object} [Obj=object] 
- * @template {keyof Obj} [PropertyName=keyof Obj] 
- * @template [Value=Obj[PropertyName]] 
+ * @template {object} [O=object] 
+ * @template {keyof O} [K=keyof O] 
+ * @template [V=O[K]] 
  */
 export class Descriptor<
-  Obj extends object = object,
-  PropertyName extends keyof Obj = keyof Obj,
-  Value = Obj[PropertyName],
+  O extends object = object,
+  K extends keyof O = keyof O,
+  V = O[K]
 > extends CommonDescriptor {
   /**
    * @description Returns accessor descriptor of a `ThisAccessorPropertyDescriptor<Value, Obj>` type, on `get` or `set` property detected.
@@ -33,10 +32,10 @@ export class Descriptor<
    * which means it doesn't contain `get` or `set` property.
    * @returns The return value is an `object` of a `ThisAccessorPropertyDescriptor<Value, Obj>` type.
    */
-  public static defineAccessor<Value, Obj extends object>(
-    descriptor: ThisAccessorPropertyDescriptor<Value, Obj>,
+  public static defineAccessor<V, O extends object>(
+    descriptor: ThisAccessorPropertyDescriptor<V, O>,
     onValidate?: ValidationCallback
-  ): ThisAccessorPropertyDescriptor<Value, Obj> | undefined {
+  ): ThisAccessorPropertyDescriptor<V, O> | undefined {
     return AccessorDescriptor.define(descriptor, onValidate);
   }
 
@@ -48,10 +47,10 @@ export class Descriptor<
    * with the `writable` or `value` property, by default it uses `dataCallback()` function from the static `DataPropertyDescriptors.guard()` method.
    * @returns The return value is an `object` of a `DataPropertyDescriptor<Value>` interface.
    */
-  public static defineData<Value>(
-    descriptor: DataPropertyDescriptor<Value>,
+  public static defineData<V>(
+    descriptor: DataPropertyDescriptor<V>,
     onValidate?: ValidationCallback
-  ): DataPropertyDescriptor<Value> | undefined {
+  ): DataPropertyDescriptor<V> | undefined {
     return DataDescriptor.define(descriptor, onValidate);
   }
 
@@ -60,9 +59,9 @@ export class Descriptor<
    * @param object An `object` of a generic `Obj` type to get property descriptors.
    * @returns The return value is an `object` of a `ObjectPropertyDescriptors<Obj>` type.
    */
-  public static fromObject<Obj extends object>(
-    object: Obj
-  ): ObjectPropertyDescriptors<Obj> | undefined {
+  public static fromObject<O extends object>(
+    object: O
+  ): ObjectPropertyDescriptors<O> | undefined {
     return {
       ...Object.getOwnPropertyDescriptors(Object.getPrototypeOf(object)) || {}, // ['__proto__'] equivalent to getPrototypeOf()
       ...Object.getOwnPropertyDescriptors(object) || {},
@@ -74,67 +73,77 @@ export class Descriptor<
    * Wrapper function for the `getOwnPropertyDescriptor`, which "Gets the own property descriptor of the specified object."
    * @param object An `object` of a generic `Obj` type or a class to get own property descriptor with the specified `key`.
    * If `class` is provided then it uses its prototype to get the property descriptor.
-   * @param key A `keyof Obj` value to get property descriptor from the `object`.
+   * @param name A `keyof Obj` value to get property descriptor from the `object`.
    * @returns The return value is an `object` of a `PropertyDescriptor` interface or an `undefined`.
+   * @example
+   * // Useful here.
+   * class A {
+   *  get foo() { return "foo"; }
+   * }
+   * const a = new A();
+   * Descriptor.fromProperty(a, 'foo'); // {set: undefined, enumerable: false, configurable: true, get: ƒ}
    */
-  public static fromProperty<Obj extends object, Key extends keyof Obj>(
-    object: Obj,
-    key: Key
+  public static fromProperty<
+    O extends object,
+    N extends keyof O,
+  >(
+    object: O,
+    name: N,
   ): PropertyDescriptor | undefined {
     return (
-      Object.getOwnPropertyDescriptor(object, key) ||
-      Object.getOwnPropertyDescriptor(Object.getPrototypeOf(object), key)
+      Object.getOwnPropertyDescriptor(object, name) ||
+      Object.getOwnPropertyDescriptor(Object.getPrototypeOf(object), name)
     );
   }
 
   /**
    * @alias fromProperty()
    */
-  public static get<Obj extends object, Name extends keyof Obj>(
-    object: Obj,
-    name: Name
+  public static get<O extends object, K extends keyof O>(
+    object: O,
+    key: K
   ): PropertyDescriptor | undefined {
-    return this.fromProperty(object, name);
+    return this.fromProperty(object, key);
   }
 
   /**
    * @alias fromObject()
    */
-  public static getAll<Obj extends object>(
-    object: Obj
-  ): ObjectPropertyDescriptors<Obj> | undefined {
+  public static getAll<O extends object>(
+    object: O
+  ): ObjectPropertyDescriptors<O> | undefined {
     return this.fromObject(object);
   }
 
   /**
    *
-   * @param object
-   * @param names
+   * @param target
+   * @param keys
    * @returns
    */
-  public static pick<Obj extends object | Function, Names extends keyof Obj>(
-    object: Obj,
-    ...names: Names[]
-  ): Pick<ObjectPropertyDescriptors<Obj>, Names> {
+  public static pick<T extends object | Function, K extends keyof T>(
+    target: T,
+    ...keys: K[]
+  ): Pick<ObjectPropertyDescriptors<T>, K> {
     // Prepare constant to assign descriptors of picked keys.
-    const pickedDescriptors: Pick<
-      ObjectPropertyDescriptors<Obj>,
-      Names
+    const result: Pick<
+      ObjectPropertyDescriptors<T>,
+      K
     > = {} as any;
 
     // Get all descriptors.
-    const descriptors = this.getAll(object);
+    const descriptors = this.getAll(target);
 
     // If descriptors exists then set picked descriptor into the map storage.
     typeof descriptors === 'object' &&
       Object.keys(descriptors)
-        .filter(key => names.includes(key as any))
+        .filter(key => keys.includes(key as any))
         .forEach(key =>
-          Object.assign(pickedDescriptors, {
+          Object.assign(result, {
             [key]: descriptors[key],
           })
         );
-    return pickedDescriptors;
+    return result;
   }
 
   /**
@@ -142,14 +151,14 @@ export class Descriptor<
    * @returns The returned value is an `object` with `accessor` and `data` properties.
    */
   public static get define(): {
-    accessor: <Value, Obj extends object>(
-      descriptor: ThisAccessorPropertyDescriptor<Value, Obj>,
+    accessor: <V, O extends object>(
+      descriptor: ThisAccessorPropertyDescriptor<V, O>,
       callback?: ValidationCallback
-    ) => ThisAccessorPropertyDescriptor<Value, Obj> | undefined,
-    data: <Value>(
-      descriptor: DataPropertyDescriptor<Value>,
+    ) => ThisAccessorPropertyDescriptor<V, O> | undefined,
+    data: <V>(
+      descriptor: DataPropertyDescriptor<V>,
       callback?: ValidationCallback
-    ) => DataPropertyDescriptor<Value> | undefined
+    ) => DataPropertyDescriptor<V> | undefined
   } {
     return {
       accessor: this.defineAccessor,
@@ -162,12 +171,12 @@ export class Descriptor<
    * @returns The returned value is an `object` with `object` and `property` properties.
    */
   public static get from(): {
-    object: <Obj extends object>(
-      object: Obj
-    ) => ObjectPropertyDescriptors<Obj> | undefined,
-    property: <Obj extends object, Name extends keyof Obj>(
-      object: Obj,
-      name: Name
+    object: <O extends object>(
+      object: O
+    ) => ObjectPropertyDescriptors<O> | undefined,
+    property: <O extends object, N extends keyof O>(
+      object: O,
+      name: N
     ) => PropertyDescriptor | undefined,
   } {
     return {
@@ -180,23 +189,23 @@ export class Descriptor<
   /**
    * @description
    * @public
-   * @type {?() => Value}
+   * @type {?() => V}
    */
-  public get?: () => Value;
+  public get?: () => V;
 
   /**
    * @description
    * @public
-   * @type {?(value: Value) => void}
+   * @type {?(value: V) => void}
    */
-  public set?: (value: Value) => void;
+  public set?: (value: V) => void;
 
   /**
    * @description
    * @public
-   * @type {?Value}
+   * @type {?V}
    */
-  public value?: Value;
+  public value?: V;
 
   /**
    * @description
@@ -209,20 +218,20 @@ export class Descriptor<
   /**
    * Creates an instance of `Descriptor`.
    * @constructor
-   * @param {AnyPropertyDescriptor<Value, Obj>} [param0={}] 
-   * @param {AnyPropertyDescriptor<Value, Obj>} param0.configurable 
-   * @param {AnyPropertyDescriptor<Value, Obj>} param0.enumerable 
-   * @param {AnyPropertyDescriptor<Value, Obj>} param0.get 
-   * @param {AnyPropertyDescriptor<Value, Obj>} param0.set 
-   * @param {AnyPropertyDescriptor<Value, Obj>} param0.value 
-   * @param {AnyPropertyDescriptor<Value, Obj>} param0.writable 
-   * @param {?Obj} [object] 
-   * @param {?PropertyName} [key] 
+   * @param {StrictPropertyDescriptor<V, O>} [param0={}] 
+   * @param {StrictPropertyDescriptor<V, O>} param0.configurable 
+   * @param {StrictPropertyDescriptor<V, O>} param0.enumerable 
+   * @param {StrictPropertyDescriptor<V, O>} param0.get 
+   * @param {StrictPropertyDescriptor<V, O>} param0.set 
+   * @param {StrictPropertyDescriptor<V, O>} param0.value 
+   * @param {StrictPropertyDescriptor<V, O>} param0.writable 
+   * @param {?O} [object] 
+   * @param {?K} [key] 
    */
   constructor(
-    { configurable, enumerable, get, set ,value, writable }: AnyPropertyDescriptor<Value, Obj> = {},
-    object?: Obj,
-    key?: PropertyName
+    { configurable, enumerable, get, set ,value, writable }: StrictPropertyDescriptor<V, O> = {},
+    object?: O,
+    key?: K
   ) {
     super({ configurable, enumerable });
 
