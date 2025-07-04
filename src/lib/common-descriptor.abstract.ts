@@ -1,10 +1,15 @@
+// Interface.
+import { CommonPropertyDescriptor } from "@typedly/descriptor";
 /**
  * @description
  * @export
  * @abstract
  * @class CommonDescriptor
  */
-export abstract class CommonDescriptor {
+export abstract class CommonDescriptor<
+  C extends boolean = boolean,
+  E extends boolean = boolean
+> {
   /**
    * @description The default value for configurable.
    * @public
@@ -26,36 +31,36 @@ export abstract class CommonDescriptor {
   /**
    * @description
    * @public
-   * @type {?boolean}
+   * @type {?C}
    */
-  public configurable?: boolean;
+  public configurable?: C;
 
   /**
    * @description
    * @public
-   * @type {?boolean}
+   * @type {?E}
    */
-  public enumerable?: boolean;
+  public enumerable?: E;
   //#endregion
 
   /**
-   * Creates an instance of child class.
+   * Creates an instance of `CommonDescriptor` child class.
    * @constructor
-   * @param {Pick<PropertyDescriptor, 'configurable' | 'enumerable'>} [param0={}] 
-   * @param {Pick<PropertyDescriptor, "configurable" | "enumerable">} param0.configurable 
-   * @param {Pick<PropertyDescriptor, "configurable" | "enumerable">} param0.enumerable 
+   * @param {CommonPropertyDescriptor<C, E>} [param0={}] 
+   * @param {CommonPropertyDescriptor<C, E>} param0.configurable 
+   * @param {CommonPropertyDescriptor<C, E>} param0.enumerable 
    */
   constructor(
-    { configurable, enumerable }: Pick<PropertyDescriptor, 'configurable' | 'enumerable'>  = {},
+    { configurable, enumerable }: CommonPropertyDescriptor<C, E>  = {},
   ) {
     delete this.configurable, delete this.enumerable;
 
     typeof configurable === 'boolean'
     ? (this.configurable = configurable)
-    : typeof CommonDescriptor.configurable === 'boolean' && (this.configurable = CommonDescriptor.configurable);
+    : typeof CommonDescriptor.configurable === 'boolean' && (this.configurable = CommonDescriptor.configurable as C);
 
     typeof enumerable === 'boolean'
     ? (this.enumerable = enumerable)
-    : typeof CommonDescriptor.enumerable === 'boolean' && (this.enumerable = CommonDescriptor.enumerable);
+    : typeof CommonDescriptor.enumerable === 'boolean' && (this.enumerable = CommonDescriptor.enumerable as E);
   }
 }
