@@ -8,9 +8,14 @@ import { ValidationCallback } from '@typedly/callback';
  * @description
  * @export
  * @class DataDescriptor
- * @template Value 
+ * @template V 
  */
-export class DataDescriptor<Value> extends CommonDescriptor {
+export class DataDescriptor<
+  V,
+  C extends boolean = boolean,
+  E extends boolean = boolean,
+  W extends boolean = boolean
+> extends CommonDescriptor<C, E> {
   /**
    * Returns strictly defined data descriptor of a `DataPropertyDescriptor<Value>` interface on `writable` or `value` property detected.
    * Strictly means, parameter `descriptor` is type guarded and method picks `configurable`, `enumerable`, `writable`, `value`
@@ -21,10 +26,10 @@ export class DataDescriptor<Value> extends CommonDescriptor {
    * with the `writable` or `value` property, by default it uses `dataCallback()` function from the static `guard()` method.
    * @returns The return value is an `object` of a `DataPropertyDescriptor<Value>` interface.
    */
-  public static define<Value>(
-    descriptor: DataPropertyDescriptor<Value>,
+  public static define<V>(
+    descriptor: DataPropertyDescriptor<V>,
     onValidate?: ValidationCallback
-  ): DataPropertyDescriptor<Value> | undefined {
+  ): DataPropertyDescriptor<V> | undefined {
     const { configurable, enumerable, value, writable } = descriptor;
     return this.guard(descriptor, onValidate)
       ? {
@@ -47,10 +52,10 @@ export class DataDescriptor<Value> extends CommonDescriptor {
    * contain `writable` or `value` property.
    * @returns The return value is a `boolean` indicating whether the `descriptor` is an `object` with the `writable` or `value` property.
    */
-  public static guard<Value>(
-    descriptor: DataPropertyDescriptor<Value>,
+  public static guard<V>(
+    descriptor: DataPropertyDescriptor<V>,
     callbackFn?: ValidationCallback
-  ): descriptor is DataPropertyDescriptor<Value> {
+  ): descriptor is DataPropertyDescriptor<V> {
     return typeof callbackFn === 'function'
       ? callbackFn(typeof descriptor === 'object' &&  'value' in descriptor, descriptor)
       : false;
@@ -67,30 +72,32 @@ export class DataDescriptor<Value> extends CommonDescriptor {
   /**
    * @description
    * @public
-   * @type {?Value}
+   * @type {?V}
    */
-  public value?: Value;
+  public value?: V;
 
   /**
    * @description
    * @public
-   * @type {?boolean}
+   * @type {?W}
    */
-  public writable?: boolean;
+  public writable?: W;
 
   /**
    * Creates an instance of `DataDescriptor`.
    * @constructor
-   * @param {DataPropertyDescriptor<Value>} [param0={}] 
-   * @param {DataPropertyDescriptor<Value>} param0.configurable 
-   * @param {DataPropertyDescriptor<Value>} param0.enumerable 
-   * @param {DataPropertyDescriptor<Value>} param0.value 
-   * @param {DataPropertyDescriptor<Value>} param0.writable 
+   * @param {DataPropertyDescriptor<V, C, E>} [param0={}] 
+   * @param {DataPropertyDescriptor<V, C, E>} param0.configurable 
+   * @param {DataPropertyDescriptor<V, C, E>} param0.enumerable 
+   * @param {DataPropertyDescriptor<V, C, E>} param0.value 
+   * @param {DataPropertyDescriptor<V, C, E>} param0.writable 
    */
-  constructor({ configurable, enumerable, value, writable }: DataPropertyDescriptor<Value> = {},) {
+  constructor(
+    { configurable, enumerable, value, writable }: DataPropertyDescriptor<V, C, E> = {},
+  ) {
     super({ configurable, enumerable });
     delete this.writable;
-    typeof writable === 'boolean' && (this.writable = writable);
+    typeof writable === 'boolean' && (this.writable = writable as W);
     this.value = value;
   }
 }
