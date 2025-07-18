@@ -3,7 +3,7 @@
   <img
     src="https://raw.githubusercontent.com/typescript-package/core/refs/heads/main/ts-package-barcode-logo-512.png"
     width="20%"
-    title="@typescript-package/descriptor"
+    title="@typescript-package/descriptor - A lightweight TypeScript library for property descriptor."
   />
 </a>
 
@@ -13,8 +13,6 @@
 [![npm version][typescript-package-npm-badge-svg]][typescript-package-npm-badge]
 [![GitHub issues][typescript-package-badge-issues]][typescript-package-issues]
 [![GitHub license][typescript-package-badge-license]][typescript-package-license]
-
-**Version:** v1.0.0-beta
 
 A **lightweight** TypeScript library for property descriptor.
 
@@ -29,13 +27,21 @@ A **lightweight** TypeScript library for property descriptor.
   - `Descriptors`
   - `PropertyDescriptorChain`
 - [Contributing](#contributing)
+- [Support](#support)
 - [Code of Conduct](code-of-conduct)
 - [Git](#git)
   - [Commit](#commit)
   - [Versioning](#versioning)
 - [License](#license)
+- [Related packages](#related-packages)
 
 ## Installation
+
+Install peer dependencies
+
+```bash
+npm install @typedly/callback @typedly/descriptor  --save-peer
+```
 
 ```bash
 npm install @typescript-package/descriptor --save-peer
@@ -58,7 +64,27 @@ import {
 
 ## Contributing
 
-Your contributions are **valued**! If you'd like to contribute, please feel **free** to submit a pull request. Help is always appreciated.
+Your contributions are valued! If you'd like to contribute, please feel free to submit a pull request. Help is always appreciated.
+
+## Support
+
+If you find this package useful and would like to support its and general development, you can contribute through one of the following payment methods. Your support helps maintain the packages and continue adding new.
+
+Support via:
+
+- [Stripe](https://donate.stripe.com/dR614hfDZcJE3wAcMM)
+- [Revolut](https://checkout.revolut.com/pay/048b10a3-0e10-42c8-a917-e3e9cb4c8e29)
+- [GitHub](https://github.com/sponsors/angular-package/sponsorships?sponsor=sciborrudnicki&tier_id=83618)
+- [DonorBox](https://donorbox.org/become-a-sponsor-to-the-angular-package?default_interval=o)
+- [Patreon](https://www.patreon.com/checkout/angularpackage?rid=0&fan_landing=true&view_as=public)
+
+or via Trust Wallet
+
+- [XLM](https://link.trustwallet.com/send?coin=148&address=GAFFFB7H3LG42O6JA63FJDRK4PP4JCNEOPHLGLLFH625X2KFYQ4UYVM4)
+- [USDT (BEP20)](https://link.trustwallet.com/send?coin=20000714&address=0xA0c22A2bc7E37C1d5992dFDFFeD5E6f9298E1b94&token_id=0x55d398326f99059fF775485246999027B3197955)
+- [ETH](https://link.trustwallet.com/send?coin=60&address=0xA0c22A2bc7E37C1d5992dFDFFeD5E6f9298E1b94)
+- [BTC](https://link.trustwallet.com/send?coin=0&address=bc1qnf709336tfl57ta5mfkf4t9fndhx7agxvv9svn)
+- [BNB](https://link.trustwallet.com/send?coin=20000714&address=0xA0c22A2bc7E37C1d5992dFDFFeD5E6f9298E1b94)
 
 ## Code of Conduct
 
@@ -98,6 +124,8 @@ How do I know when to release 1.0.0?
 ## License
 
 MIT © typescript-package ([license][typescript-package-license])
+
+## Related packages
 
 <!-- This package: typescript-package  -->
   <!-- GitHub: badges -->
