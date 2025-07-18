@@ -1,15 +1,20 @@
 // Interface.
 import { CommonPropertyDescriptor } from "@typedly/descriptor";
-/**
- * @description
+ /**
+ * @description The common properties for descriptors.
  * @export
  * @abstract
  * @class CommonDescriptor
+ * @template {boolean} [C=boolean] The type of configurable property.
+ * @template {boolean} [E=boolean] The type of enumerable property.
+ * @implements {Pick<PropertyDescriptor, 'configurable' | 'enumerable'>}
  */
 export abstract class CommonDescriptor<
+  // Configurable.
   C extends boolean = boolean,
+  // Enumerable.
   E extends boolean = boolean
-> {
+> implements Pick<PropertyDescriptor, 'configurable' | 'enumerable'> {
   /**
    * @description The default value for configurable.
    * @public
@@ -29,14 +34,14 @@ export abstract class CommonDescriptor<
 
   //#region Property descriptor
   /**
-   * @description
+   * @description The configurable property.
    * @public
    * @type {?C}
    */
   public configurable?: C;
 
   /**
-   * @description
+   * @description The enumerable property.
    * @public
    * @type {?E}
    */
@@ -46,9 +51,9 @@ export abstract class CommonDescriptor<
   /**
    * Creates an instance of `CommonDescriptor` child class.
    * @constructor
-   * @param {CommonPropertyDescriptor<C, E>} [param0={}] 
-   * @param {CommonPropertyDescriptor<C, E>} param0.configurable 
-   * @param {CommonPropertyDescriptor<C, E>} param0.enumerable 
+   * @param {CommonPropertyDescriptor<C, E>} [param0={}] Object containing configurable and enumerable properties.
+   * @param {CommonPropertyDescriptor<C, E>} param0.configurable The configurable property. Defaults to static configurable value.
+   * @param {CommonPropertyDescriptor<C, E>} param0.enumerable The enumerable property. Defaults to static enumerable value.
    */
   constructor(
     { configurable, enumerable }: CommonPropertyDescriptor<C, E>  = {},
