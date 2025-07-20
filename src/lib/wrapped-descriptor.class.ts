@@ -1,3 +1,5 @@
+// Abstract.
+import { WrappedDescriptorCore } from './wrapped-descriptor-core.abstract';
 // Class.
 import { AccessorDescriptor } from './accessor-descriptor.class';
 // Interface.
@@ -20,7 +22,8 @@ export class WrappedDescriptor<
   C extends boolean = boolean,
   // Enumerable.
   E extends boolean = boolean,
-> extends AccessorDescriptor<O, K, V, C, E> {
+> extends WrappedDescriptorCore<O, K, V, A, ED, C, E> {
+
   public get active() {
     return this.#active;
   }
@@ -62,7 +65,7 @@ export class WrappedDescriptor<
       onGet,
       onSet,
       previousDescriptor,
-      privateKey,
+      privateKey, 
       set
     }: WrappedPropertyDescriptor<O, K, V, A, ED, C, E>,
     object: O,
@@ -73,30 +76,33 @@ export class WrappedDescriptor<
 
     const descriptor = this;
 
-    !get && (this.get = function(this: O): V {
-      if (descriptor.enabled === false) {
-        return undefined as V;
-      }
+    get
+      ? (this.get = function(this: O): V { return get?.call(this, descriptor) as V; })
+      : (this.get = function(this: O): V {
+        if (descriptor.enabled === false) {
+          return undefined as V;
+        }
 
-      const o = (this as O);
+        const o = (this as O);
 
-      // Get the previous value from descriptor.
-      const previousValue = descriptor.previousDescriptor
-        ? descriptor.previousDescriptor.get && typeof descriptor.previousDescriptor.get === 'function'
-          ? descriptor.previousDescriptor.get.call(this)
-          : (descriptor.previousDescriptor as PropertyDescriptor).value
-        : undefined;
+        // Get the previous value from descriptor.
+        const previousValue = descriptor.previousDescriptor
+          ? descriptor.previousDescriptor.get && typeof descriptor.previousDescriptor.get === 'function'
+            ? descriptor.previousDescriptor.get.call(this)
+            : (descriptor.previousDescriptor as PropertyDescriptor).value
+          : undefined;
 
-      // Current descriptor.
-      return descriptor.onGet
-        && ((typeof descriptor.active === 'boolean' && descriptor.active)
-          || (typeof descriptor.active === 'object' && descriptor.active.onGet === true))
-        ? descriptor.onGet.call(o, key, previousValue, o[descriptor.privateKey as K] as V, o) as V
-        : o[descriptor.privateKey as K] as V;
+        // Current descriptor.
+        return descriptor.onGet
+          && ((typeof descriptor.active === 'boolean' && descriptor.active)
+            || (typeof descriptor.active === 'object' && descriptor.active.onGet === true))
+          ? descriptor.onGet.call(o, key, previousValue, o[descriptor.privateKey as K] as V, o) as V
+          : o[descriptor.privateKey as K] as V;
+      });
 
-    });
-
-    !set && (this.set = function(this: O, value: V): void {
+    set
+      ? (this.set = function(this: O, value: V) { return set?.call(this, value, descriptor); })
+      : (this.set = function(this: O, value: V): void {
       if (descriptor.enabled !== false) {
         // Set the this as the target object.
         const o = (this as O);
