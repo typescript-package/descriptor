@@ -3,7 +3,7 @@ import { DescriptorChainCore } from "./descriptor-chain-core.abstract";
 // Class.
 import { Descriptor } from "./descriptor.class";
 // Type.
-import { StrictPropertyDescriptor } from "@typedly/descriptor";
+import { StrictPropertyDescriptor, ThisAccessorPropertyDescriptor } from "@typedly/descriptor";
 /**
  * @description The class representing a chain of property descriptors.
  * @export
@@ -15,8 +15,7 @@ import { StrictPropertyDescriptor } from "@typedly/descriptor";
  * @template {boolean} [ED=boolean] The type of enabled property.
  * @template {boolean} [C=boolean] The type of configurable property.
  * @template {boolean} [E=boolean] The type of enumerable property.
- * @template {StrictPropertyDescriptor<V, O, C, E>} [D=StrictPropertyDescriptor<V, O, C, E>] The type of strict property descriptor.
- * @template {Descriptor<O, K, V, C, E>} [DR=Descriptor<O, K, V, C, E>] The type of descriptor chain.
+ * @template {ThisAccessorPropertyDescriptor<V, O, C, E>} [D=ThisAccessorPropertyDescriptor<V, O, C, E>] The type of strict property descriptor.
  */
 export class DescriptorChain<
   // Object.
@@ -34,27 +33,39 @@ export class DescriptorChain<
   // Enumerable.
   E extends boolean = boolean,
   // Descriptor
-  D extends StrictPropertyDescriptor<V, O, C, E> = StrictPropertyDescriptor<V, O, C, E>,
-  // Descriptor chain.
-  DR extends Descriptor<O, K, V, C, E> = Descriptor<O, K, V, C, E>
+  D extends ThisAccessorPropertyDescriptor<V, O, C, E> = ThisAccessorPropertyDescriptor<V, O, C, E>,
 > implements DescriptorChainCore<O, K, V, A, ED, C, E, D> {
-
+  /**
+   * @inheritdoc
+   */
   get active(): A {
     return false as A;
   }
 
+  /**
+   * @inheritdoc
+   */
   get current(): D {
-    return this.#data[this.#currentIndex] as D;
+    return this.#data[this.#data.length -1] as D;
   }
 
-  get enabled(): ED {
+  /**
+   * @inheritdoc
+   */
+  public get enabled(): ED {
     return false as ED
   }
 
+  /**
+   * @inheritdoc
+   */
   public get lastIndex(): number {
     return this.#data.length > 0 ? this.#data.length -  1 : 0;
   }
 
+  /**
+   * @inheritdoc
+   */
   public get size(): number {
     return this.#data.length
   }
@@ -74,41 +85,68 @@ export class DescriptorChain<
     this.#object = object; 
   }
 
+  /**
+   * @inheritdoc
+   */
   public add(descriptor: D): this {
     this.#data.push(descriptor);
     return this;
   }
 
+  /**
+   * @inheritdoc
+   */
   public clear(): this {
     this.#data.length = 0;
     return this;
   }
 
+  /**
+   * @inheritdoc
+   */
   public delete(index: number): this {
     this.#data.splice(index, 1);
     return this;
   }
 
+  /**
+   * @inheritdoc
+   */
   public entries(): IterableIterator<[number, D]> {
     return this.#data.entries();
   }
 
+  /**
+   * @inheritdoc
+   */
   public first(): D {
     return this.#data[0];
   }
 
+  /**
+   * @inheritdoc
+   */
   public get(index: number): D {
     return this.#data[index];
   }
 
+  /**
+   * @inheritdoc
+   */
   public has(index: number): boolean {
     return index >= 0 && index < this.#data.length;
   }
 
+  /**
+   * @inheritdoc
+   */
   public last(): D {
     return this.#data[this.#data.length - 1] as D;
   }
 
+  /**
+   * @inheritdoc
+   */
   public load(): this {
     const descriptor = Descriptor.fromProperty(
       this.#object,
@@ -122,11 +160,17 @@ export class DescriptorChain<
     return this;
   }
 
+  /**
+   * @inheritdoc
+   */
   public set(index: number, value: D): this {
     this.#data[index] = value;
     return this;
   }
 
+  /**
+   * @inheritdoc
+   */
   public update(index: number, value: D): this {
     this.#data[index] = {
       ...this.#data[index],
@@ -135,6 +179,9 @@ export class DescriptorChain<
     return this;
   }
 
+  /**
+   * @inheritdoc
+   */
   public values(): IterableIterator<D> {
     return this.#data.values();
   }
