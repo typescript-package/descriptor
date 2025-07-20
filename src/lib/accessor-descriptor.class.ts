@@ -26,7 +26,7 @@ export class AccessorDescriptor<
   C extends boolean = boolean,
   // Enumerable.
   E extends boolean = boolean
-> extends CommonDescriptor<C, E> {
+> extends CommonDescriptor<C, E> implements ThisAccessorPropertyDescriptor<V, O, C, E> {
   /**
    * @description Creates an instance of `AccessorDescriptor`.
    * @public

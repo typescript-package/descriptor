@@ -29,7 +29,7 @@ export class DataDescriptor<
   E extends boolean = boolean,
   // Writable.
   W extends boolean = boolean
-> extends CommonDescriptor<C, E> {
+> extends CommonDescriptor<C, E> implements DataPropertyDescriptor<V, C, E, W> {
   /**
    * @description Creates an instance of `DataDescriptor`.
    * @public
