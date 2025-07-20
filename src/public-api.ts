@@ -4,10 +4,15 @@
 export {
   // Abstract.
   CommonDescriptor,
+  DescriptorChainCore,
+  WrappedDescriptorCore,
+
   // Class.
   AccessorDescriptor,
   DataDescriptor,
   Descriptor,
+  DescriptorChain,
   Descriptors,
-  PropertyDescriptorChain,
+  WeakWrappedDescriptor,
+  WrappedDescriptor
 } from './lib';
