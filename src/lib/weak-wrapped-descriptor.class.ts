@@ -1,8 +1,8 @@
 // Interface.
 import { WrappedPropertyDescriptor } from '@typedly/descriptor';
 // Type.
-    import { ValidationCallback } from '@typedly/callback';
-    import { WrappedDescriptorCore } from './wrapped-descriptor-core.abstract';
+import { ValidationCallback } from '@typedly/callback';
+import { WrappedDescriptorCore } from './wrapped-descriptor-core.abstract';
 
 export class WeakWrappedDescriptor<
   // Object.
@@ -21,7 +21,7 @@ export class WeakWrappedDescriptor<
   E extends boolean = boolean,
 > extends WrappedDescriptorCore<O, K, V, A, ED, C, E> {
 
-  public static getDescriptor<
+  public static get<
     // Object.
     O = any,
     // Key.
@@ -40,7 +40,7 @@ export class WeakWrappedDescriptor<
     return this.#descriptor.get(instance) as WrappedPropertyDescriptor<O, K, V, A, ED, C, E> | undefined;
   }
 
-  static #setDescriptor<
+  public static set<
     // Object.
     O = any,
     // Key.
@@ -112,7 +112,7 @@ export class WeakWrappedDescriptor<
 
     const descriptor = this;
 
-    WeakWrappedDescriptor.#setDescriptor(this, descriptor);
+    WeakWrappedDescriptor.set(this, descriptor);
 
     get
       ? (this.get = function(this: O): V { return get?.call(this, descriptor) as V; })
