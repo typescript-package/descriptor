@@ -3,7 +3,7 @@ import { AccessorDescriptor } from './accessor-descriptor.class';
 // Interface.
 import { WrappedPropertyDescriptor } from '@typedly/descriptor';
 // Type.
-import { GetterCallback, ValidationCallback, SetterCallback } from '@typedly/callback';
+import { GetterCallback, SetterCallback } from '@typedly/callback';
 /**
  * @description The abstract class for wrapped descriptors.
  * @export
@@ -33,7 +33,8 @@ export abstract class WrappedDescriptorCore<
   C extends boolean = boolean,
   // Enumerable.
   E extends boolean = boolean,
-> extends AccessorDescriptor<O, K, V, C, E> {
+> extends AccessorDescriptor<O, K, V, C, E>
+  implements WrappedPropertyDescriptor<O, K, V, A, ED, C, E> {
   /**
    * @description Whether the descriptor is active.
    * If `true`, the descriptor is active.
@@ -54,6 +55,14 @@ export abstract class WrappedDescriptorCore<
    * @type {ED}
    */
   abstract get enabled(): ED;
+
+  /**
+   * @description
+   * @abstract
+   * @readonly
+   * @type {number}
+   */
+  abstract get index(): number;
 
   /**
    * @description The custom getter function for the descriptor.
@@ -86,32 +95,4 @@ export abstract class WrappedDescriptorCore<
    * @type {(PropertyKey | undefined)}
    */
   abstract get privateKey(): PropertyKey | undefined;
-
-  /**
-   * @description Creates an instance of `WrappedDescriptorCore` child class.
-   * @constructor
-   * @param {WrappedPropertyDescriptor<O, K, V, A, ED, C, E>} param0 The properties of the wrapped descriptor.
-   * @param {O} object The object (non-stored) to define the descriptor on.
-   * @param {K} key The key (non-stored) to define the descriptor on.
-   * @param {?ValidationCallback<WrappedPropertyDescriptor<O, K, V, A, ED, C, E>>} [onValidate] The validation callback.
-   */
-  constructor(
-    {
-      active,
-      configurable,
-      enabled,
-      enumerable,
-      get,
-      onGet,
-      onSet,
-      previousDescriptor,
-      privateKey, 
-      set
-    }: WrappedPropertyDescriptor<O, K, V, A, ED, C, E>,
-    object: O,
-    key: K,
-    onValidate?: ValidationCallback<WrappedPropertyDescriptor<O, K, V, A, ED, C, E>>
-  ) {
-    super({configurable, enumerable, get, set}, object, key, onValidate);
-  }
 }
