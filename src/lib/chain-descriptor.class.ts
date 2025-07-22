@@ -18,7 +18,7 @@ import { ValidationCallback } from '@typedly/callback';
  * @template {boolean} [ED=boolean] 
  * @template {boolean} [C=boolean] 
  * @template {boolean} [E=boolean] 
- * @extends {WrappedDescriptor<O, K, V, A, ED, C, E>}
+ * @extends {WrappedDescriptorBase<O, K, V, A, ED, C, E>}
  */
 export class ChainDescriptor<
   // Object.
@@ -147,46 +147,45 @@ export class ChainDescriptor<
   ) {
     const chain = this.chain;
 
-    // Set the index if not provided.
-    typeof descriptor.index === 'undefined' && (descriptor.index = this.chain.lastIndex);
+    // Set the private key if not provided.
+    this.#chain.add(new WrappedDescriptor({ ...{
+      index: typeof descriptor.index === 'undefined' ? this.chain.lastIndex : 0,
+      set: function(
+        this: O,
+        value: V,
+        descriptor?: WrappedPropertyDescriptor<O, K, V, A, ED, C, E>
+      ) {
+        if (descriptor) {
+          if (descriptor.enabled === true) {
+            // Set the this as the target object.
+            const o = (this as O);
 
-    const set = function(
-      this: O,
-      value: V,
-      descriptor?: WrappedPropertyDescriptor<O, K, V, A, ED, C, E>
-    ) {
-      if (descriptor) {
-        if (descriptor.enabled !== false) {
-          // Set the this as the target object.
-          const o = (this as O);
+            // Get the previous value from previous descriptor or current value.
+            const previousValue = o[descriptor.privateKey as K] as V
+              || (
+                descriptor.previousDescriptor ?
+                  descriptor.previousDescriptor.get
+                    ? descriptor.previousDescriptor.get.call(this)
+                    : (descriptor.previousDescriptor as PropertyDescriptor).value
+                  : undefined
+              ) as V;
 
-          // Get the previous value from previous descriptor or current value.
-          // const previousValue = (o[descriptor.privateKey as K] as O[K] || (descriptor.previousDescriptor as PropertyDescriptor)?.value) as V;
+            // Perform previous descriptor.
+            typeof descriptor.index === 'number' && descriptor.index > 0 && chain.get(descriptor.index - 1)?.set?.call(o, value, descriptor);
 
-          // Perform previous descriptor.
-          typeof descriptor.index === 'number' && descriptor.index > 0 && chain.get(descriptor.index - 1)?.set?.call(o, value, descriptor);
-
-          // Set the private property value.
-          Object.assign(
-            o as any,
-            {
-              [descriptor.privateKey as K]: descriptor.onSet
-                && (
-                  (typeof descriptor.active === 'boolean' && descriptor.active)
-                  || (typeof descriptor.active === 'object' && descriptor.active.onSet === true)
-                )
-                ? descriptor.onSet.call(o, value, undefined as any, key, o) as V
-                : value
-            }
-          );
-        };
+            // Set the private property value.
+            Object.assign(
+              o as any,
+              {
+                [descriptor.privateKey as K]: descriptor.onSet && descriptor.isActive?.('onSet')
+                  ? descriptor.onSet.call(o, value, previousValue, key, o) as V
+                  : value
+              }
+            );
+          }
+        }
       }
-    }
-
-    descriptor = { ...{ set }, ...descriptor };
-
-    this.#chain.add(new WrappedDescriptor(descriptor, this.#object, this.#key));
-
+    }, ...descriptor }, this.#object, this.#key));
     return this;
   }
 }
