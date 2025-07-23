@@ -46,7 +46,14 @@ export class DescriptorChain<
    * @inheritdoc
    */
   get current(): D {
-    return this.#data[this.#data.length -1] as D;
+    return this.#data[this.currentIndex] as D;
+  }
+
+  /**
+   * @inheritdoc
+   */
+  get currentIndex(): number {
+    return this.#currentIndex;
   }
 
   /**
@@ -60,7 +67,7 @@ export class DescriptorChain<
    * @inheritdoc
    */
   public get lastIndex(): number {
-    return this.#data.length > 0 ? this.#data.length -  1 : 0;
+    return this.#data.length - 1;
   }
 
   /**
@@ -76,7 +83,7 @@ export class DescriptorChain<
   #object: O;
 
   /**
-   * Creates an instance of `PropertyDescriptorChain`.
+   * Creates an instance of `DescriptorChain`.
    * @param object The object containing the property.
    * @param key The key of the property.
    */
@@ -141,7 +148,7 @@ export class DescriptorChain<
    * @inheritdoc
    */
   public last(): D {
-    return this.#data[this.#data.length - 1] as D;
+    return this.#data[this.lastIndex] as D;
   }
 
   /**
@@ -165,6 +172,14 @@ export class DescriptorChain<
    */
   public set(index: number, value: D): this {
     this.#data[index] = value;
+    return this;
+  }
+  
+  /**
+   * @inheritdoc
+   */
+  public setCurrentIndex(index: number): this {
+    this.#currentIndex = index;
     return this;
   }
 
