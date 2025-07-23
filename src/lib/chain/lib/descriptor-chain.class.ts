@@ -1,7 +1,7 @@
 // Abstract.
 import { DescriptorChainCore } from "./descriptor-chain-core.abstract";
 // Class.
-import { Descriptor } from "./descriptor.class";
+import { Descriptor } from "../../descriptor.class";
 // Type.
 import { StrictPropertyDescriptor, ThisAccessorPropertyDescriptor } from "@typedly/descriptor";
 /**

@@ -1,8 +1,8 @@
 // Abstract.
-import { WrappedDescriptorBase } from './wrapped-descriptor-base.abstract';
+import { WrappedDescriptorBase } from '../../wrapped-descriptor-base.abstract';
 // Class.
 import { DescriptorChain } from './descriptor-chain.class';
-import { WrappedDescriptor } from './wrapped-descriptor.class';
+import { WrappedDescriptor } from '../../wrapped-descriptor.class';
 // Interface.
 import { WrappedPropertyDescriptor } from '@typedly/descriptor';
 // Type.
