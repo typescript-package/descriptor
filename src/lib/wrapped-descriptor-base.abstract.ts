@@ -98,9 +98,11 @@ export abstract class WrappedDescriptorBase<
           // Get the previous value from previous descriptor or current value.
           const previousValue = o[descriptor.privateKey as K] as V
             || (
-              descriptor.previousDescriptor?.get
-                ? descriptor.previousDescriptor.get.call(this)
-                : (descriptor.previousDescriptor as PropertyDescriptor).value
+              descriptor.previousDescriptor ?
+                descriptor.previousDescriptor.get
+                  ? descriptor.previousDescriptor.get.call(this)
+                  : (descriptor.previousDescriptor as PropertyDescriptor).value
+                : undefined
             ) as V;
 
           // Perform previous descriptor.
