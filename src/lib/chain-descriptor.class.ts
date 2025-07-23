@@ -8,9 +8,9 @@ import { WrappedPropertyDescriptor } from '@typedly/descriptor';
 // Type.
 import { ValidationCallback } from '@typedly/callback';
 /**
- * @description 
+ * @description
  * @export
- * @class WrappedDescriptor
+ * @class ChainDescriptor
  * @template [O=any] 
  * @template {keyof O} [K=keyof O] 
  * @template {K extends keyof O ? O[K] : any} [V=K extends keyof O ? O[K] : any] 
@@ -36,45 +36,71 @@ export class ChainDescriptor<
   // Enumerable.
   E extends boolean = boolean,
 > extends WrappedDescriptorBase<O, K, V, A, ED, C, E> {
-
+  /**
+   * @description
+   * @public
+   * @readonly
+   * @type {DescriptorChain<O, K, V, A, ED, C, E, WrappedPropertyDescriptor<O, K, V, A, ED, C, E>>}
+   */
   public get chain() {
     return this.#chain;
   }
 
   /**
    * @inheritdoc
+   * @public
+   * @readonly
+   * @type {A}
    */
   public override get active() {
-    return this.chain.last().active as A;
+    return this.chain.current.active as A | { onGet?: boolean; onSet?: boolean };
   }
 
   /**
    * @inheritdoc
+   * @public
+   * @readonly
+   * @type {ED}
    */
   public override get enabled() {
-    return this.chain.last().enabled as ED;
-  }
-
-  public override get index() {
-    return this.chain.last().index as number;
+    return this.chain.current.enabled as ED;
   }
 
   /**
    * @inheritdoc
+   * @public
+   * @readonly
+   * @type {number}
+   */
+  public override get index() {
+    return this.chain.current.index as number;
+  }
+
+  /**
+   * @inheritdoc
+   * @public
+   * @readonly
+   * @type {*}
    */
   public override get onGet() {
-    return this.chain.last()?.onGet;
+    return this.chain.current.onGet;
   }
 
   /**
    * @inheritdoc
+   * @public
+   * @readonly
+   * @type {*}
    */
   public override get onSet() {
-    return this.chain.last()?.onSet;
+    return this.chain.current.onSet;
   }
 
   /**
    * @inheritdoc
+   * @public
+   * @readonly
+   * @type {}
    */
   public override get previousDescriptor() {
     return this.chain.get(this.index - 1);
@@ -82,21 +108,38 @@ export class ChainDescriptor<
 
   /**
    * @inheritdoc
+   * @public
+   * @readonly
+   * @type {*}
    */
   public override get privateKey() {
-    return this.chain.last().privateKey;
+    return this.chain.current.privateKey;
   }
 
+  /**
+   * @description The descriptor chain instance.
+   * @type {DescriptorChain<O, K, V, A, ED, C, E, WrappedPropertyDescriptor<O, K, V, A, ED, C, E>>}
+   */
   #chain: DescriptorChain<O, K, V, A, ED, C, E, WrappedPropertyDescriptor<O, K, V, A, ED, C, E>>;
+
+  /**
+   * @description The object to define the descriptor on.
+   * @type {O}
+   */
   #object: O;
+
+  /**
+   * @description The key to define the descriptor on.
+   * @type {K}
+   */
   #key: K;
 
   /**
    * Creates an instance of `WrappedDescriptor`.
    * @constructor
-   * @param {WrappedPropertyDescriptor<O, K, V, A, ED, C, E>} param0 
-   * @param {O} object 
-   * @param {K} key 
+   * @param {WrappedPropertyDescriptor<O, K, V, A, ED, C, E>} param0 The properties of the wrapped descriptor.
+   * @param {O} object The object to define the descriptor on.
+   * @param {K} key The key to define the descriptor on.
    * @param {?ValidationCallback<WrappedPropertyDescriptor<O, K, V, A, ED, C, E>>} [onValidate] 
    */
   constructor(
@@ -118,12 +161,12 @@ export class ChainDescriptor<
     onValidate?: ValidationCallback<WrappedPropertyDescriptor<O, K, V, A, ED, C, E>>
   ) {
     super(arguments[0], object, key, onValidate);
-
     // Initialize the descriptor chain.
     this.#chain = new DescriptorChain(object, key);
+    // Set the object.
     this.#object = object;
+    // Set the key.
     this.#key = key;
-
     // Add the descriptor to the chain.
     this.add({
       active,
@@ -138,18 +181,30 @@ export class ChainDescriptor<
       privateKey,
       set
     });
-
   }
 
+  /**
+   * @description Adds a new descriptor to the chain.
+   * @public
+   * @param {WrappedPropertyDescriptor<O, K, V, A, ED, C, E>} descriptor The descriptor to add.
+   * @param {K} [key=this.#key] The key to define the descriptor on.
+   * @returns {this} The instance of the chain descriptor for method chaining.
+   */
   public add(
     descriptor: WrappedPropertyDescriptor<O, K, V, A, ED, C, E>,
     key = this.#key
   ) {
     const chain = this.chain;
 
+    // Sets the current index to the last index of the chain if not already set.
+    !descriptor.index && (descriptor.index = this.chain.lastIndex + 1);
+
+    // Sets the current index to the descriptor index or last index of the chain.
+    this.chain.setCurrentIndex(descriptor.index);
+
     // Set the private key if not provided.
     this.#chain.add(new WrappedDescriptor({ ...{
-      index: typeof descriptor.index === 'undefined' ? this.chain.lastIndex : 0,
+      index: descriptor.index,
       set: function(
         this: O,
         value: V,
@@ -171,7 +226,9 @@ export class ChainDescriptor<
               ) as V;
 
             // Perform previous descriptor.
-            typeof descriptor.index === 'number' && descriptor.index > 0 && chain.get(descriptor.index - 1)?.set?.call(o, value, descriptor);
+            typeof descriptor.index === 'number'
+              && descriptor.index > 0
+              && chain.get(descriptor.index - 1)?.set?.call(o, value, descriptor);
 
             // Set the private property value.
             Object.assign(
