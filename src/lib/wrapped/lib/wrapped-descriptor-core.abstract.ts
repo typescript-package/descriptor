@@ -1,5 +1,5 @@
 // Class.
-import { AccessorDescriptor } from './accessor-descriptor.class';
+import { AccessorDescriptor } from '../../accessor-descriptor.class';
 // Interface.
 import { WrappedPropertyDescriptor } from '@typedly/descriptor';
 // Type.
