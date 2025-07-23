@@ -51,6 +51,13 @@ export abstract class DescriptorChainCore<
   abstract get current(): D;
 
   /**
+   * @description The current index of the descriptor chain to use by the property.
+   * @readonly
+   * @type {number}
+   */
+  abstract get currentIndex(): number;
+
+  /**
    * @description The enabled state of the descriptor chain.
    * @abstract
    * @readonly
@@ -79,7 +86,7 @@ export abstract class DescriptorChainCore<
   /**
    * @description Adds a new descriptor to the chain.
    * @abstract
-   * @param {D} descriptor 
+   * @param {D} descriptor The descriptor to add.
    * @returns {this} The instance of the descriptor chain for method chaining.
    */
   abstract add(descriptor: D): this;
@@ -94,7 +101,7 @@ export abstract class DescriptorChainCore<
   /**
    * @description Deletes a descriptor from the chain at the specified index.
    * @abstract
-   * @param {number} index 
+   * @param {number} index The index of the descriptor to delete.
    * @returns {this} 
    */
   abstract delete(index: number): this;
@@ -116,15 +123,15 @@ export abstract class DescriptorChainCore<
   /**
    * @description Returns the descriptor at the specified index.
    * @abstract
-   * @param {number} index 
-   * @returns {D} 
+   * @param {number} index The index of the descriptor to retrieve.
+   * @returns {D} The descriptor at the specified index.
    */
   abstract get(index: number): D;
 
   /**
    * @description Checks if a descriptor exists at the specified index.
    * @abstract
-   * @param {number} index 
+   * @param {number} index The index to check.
    * @returns {boolean} 
    */
   abstract has(index: number): boolean;
@@ -151,6 +158,14 @@ export abstract class DescriptorChainCore<
    * @returns {this} The instance of the descriptor chain for method chaining.
    */
   abstract set(index: number, value: D): this;
+
+  /**
+   * @description Sets the current index of the descriptor chain.
+   * @abstract
+   * @param {number} index The index to set as the current index.
+   * @returns {this} The instance of the descriptor chain for method chaining.
+   */
+  abstract setCurrentIndex(index: number): this;
 
   /**
    * @description The update method updates the descriptor at the specified index with a new value.
