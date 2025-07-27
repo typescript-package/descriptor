@@ -11,11 +11,11 @@ import { WrappedPropertyDescriptor } from '@typedly/descriptor';
  * @template {keyof O} [K=keyof O] 
  * @template {K extends keyof O ? O[K] : any} [V=K extends keyof O ? O[K] : any] 
  * @template {boolean} [A=boolean] 
- * @template {boolean} [ED=boolean] 
+ * @template {boolean} [N=boolean] 
  * @template {boolean} [C=boolean] 
  * @template {boolean} [E=boolean] 
- * @template {WrappedDescriptorBase<O, K, V, A, ED, C, E, D>} [D=WrappedDescriptorBase<O, K, V, A, ED, C, E, any>] 
- * @extends {WrappedDescriptorCore<O, K, V, A, ED, C, E, D>}
+ * @template {WrappedDescriptorBase<O, K, V, A, N, C, E, D>} [D=WrappedDescriptorBase<O, K, V, A, N, C, E, any>] 
+ * @extends {WrappedDescriptorCore<O, K, V, A, N, C, E, D>}
  */
 export abstract class WrappedDescriptorBase<
   // Object.
@@ -27,14 +27,14 @@ export abstract class WrappedDescriptorBase<
   // Active.
   A extends boolean = boolean,
   // Enabled.
-  ED extends boolean = boolean,
+  N extends boolean = boolean,
   // Configurable.
   C extends boolean = boolean,
   // Enumerable.
   E extends boolean = boolean,
   // The type of the previous descriptor.
-  D extends WrappedDescriptorBase<O, K, V, A, ED, C, E, D> = WrappedDescriptorBase<O, K, V, A, ED, C, E, any>
-> extends WrappedDescriptorCore<O, K, V, A, ED, C, E, D> {
+  D extends WrappedDescriptorBase<O, K, V, A, N, C, E, D> = WrappedDescriptorBase<O, K, V, A, N, C, E, any>
+> extends WrappedDescriptorCore<O, K, V, A, N, C, E, D> {
   /**
    * @description The defaults for instance `active` property.
    * @public
@@ -52,28 +52,41 @@ export abstract class WrappedDescriptorBase<
   public static enabled: boolean = true;
 
   /**
+   * @description
+   * @public
+   * @readonly
+   * @type {((this: O, descriptor?: D | undefined) => V) | undefined}
+   */
+  public get get() {
+    return this.#get;
+  }
+
+  /**
+   * @description
+   * @public
+   * @readonly
+   * @type {((this: O, value: V, descriptor?: D | undefined) => void) | undefined}
+   */
+  public get set() {
+    return this.#set;
+  }
+
+  #get?: (this: O, descriptor?: D) => V;
+  #set?: (this: O, value: V, descriptor?: D) => void;
+
+  /**
    * Creates an instance of `WrappedDescriptor`.
    * @constructor
    * @param {O} object 
    * @param {K} key
-   * @param {WrappedPropertyDescriptor<O, K, V, A, ED, C, E, D>} param0 
+   * @param {WrappedPropertyDescriptor<O, K, V, A, N, C, E, D>} param0 
    */
   constructor(
     object: O,
     key: K, 
-    {
-      configurable,
-      enumerable,
-      get,
-      set
-    }: WrappedPropertyDescriptor<O, K, V, A, ED, C, E, D>,
+    { configurable, enumerable }: WrappedPropertyDescriptor<O, K, V, A, N, C, E, D>,
   ) {
     super({ configurable, enumerable });
-
-    delete this.get, delete this.set;
-
-    typeof get === 'function' && (this.get = get);
-    typeof set === 'function' && (this.set = set);
   }
 
   /**
@@ -127,14 +140,14 @@ export abstract class WrappedDescriptorBase<
   /**
    * @description Wraps the property with the descriptor.
    * @protected
-   * @param {WrappedPropertyDescriptor<O, K, V, A, ED, C, E, D>} param0 The wrapped property `set` and `get` descriptor.
+   * @param {WrappedPropertyDescriptor<O, K, V, A, N, C, E, D>} param0 The wrapped property `set` and `get` descriptor.
    */
-  protected wrap({ get, set }: WrappedPropertyDescriptor<O, K, V, A, ED, C, E, D>): void {
+  protected wrap({ get, set }: WrappedPropertyDescriptor<O, K, V, A, N, C, E, D>): void {
     // Use descriptor instance.
     const descriptor = this;
 
     // Set the `get`.
-    this.get = get
+    this.#get = get
       ? (function (this: O): V { return get?.call(this, descriptor as unknown as D) as V; })
       : (function (this: O): V {
         if (descriptor.enabled === true) {
@@ -160,7 +173,7 @@ export abstract class WrappedDescriptorBase<
     );
 
     // Set the `set`.
-    this.set = set
+    this.#set = set
       ? function(this: O, value: V) {
         set?.call(this, value, descriptor as unknown as D);
       }
