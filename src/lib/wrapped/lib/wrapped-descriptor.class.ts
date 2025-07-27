@@ -12,10 +12,10 @@ import { GetterCallback, SetterCallback } from '@typedly/callback';
  * @template {keyof O} [K=keyof O] 
  * @template {K extends keyof O ? O[K] : any} [V=K extends keyof O ? O[K] : any] 
  * @template {boolean} [A=boolean] 
- * @template {boolean} [ED=boolean] 
+ * @template {boolean} [N=boolean] 
  * @template {boolean} [C=boolean] 
  * @template {boolean} [E=boolean] 
- * @extends {WrappedDescriptorBase<O, K, V, A, ED, C, E>}
+ * @extends {WrappedDescriptorBase<O, K, V, A, N, C, E>}
  */
 export class WrappedDescriptor<
   // Object.
@@ -27,13 +27,13 @@ export class WrappedDescriptor<
   // Active.
   A extends boolean = boolean,
   // Enabled.
-  ED extends boolean = boolean,
+  N extends boolean = boolean,
   // Configurable.
   C extends boolean = boolean,
   // Enumerable.
   E extends boolean = boolean,
-  D extends WrappedDescriptor<O, K, V, A, ED, C, E, D> = WrappedDescriptor<O, K, V, A, ED, C, E, any>
-> extends WrappedDescriptorBase<O, K, V, A, ED, C, E, D> {
+  D extends WrappedDescriptor<O, K, V, A, N, C, E, D> = WrappedDescriptor<O, K, V, A, N, C, E, any>
+> extends WrappedDescriptorBase<O, K, V, A, N, C, E, D> {
   /**
    * @description The string tag for the descriptor.
    * @public
@@ -108,9 +108,9 @@ export class WrappedDescriptor<
 
   /**
    * @description Privately stored enabled state of the descriptor.
-   * @type {ED}
+   * @type {N}
    */
-  #enabled: ED = true as ED;
+  #enabled: N = true as N;
 
   /**
    * @description Privately stored index of the descriptor in the chain.
@@ -153,7 +153,7 @@ export class WrappedDescriptor<
    * @constructor
    * @param {O} object 
    * @param {K} key
-   * @param {WrappedPropertyDescriptor<O, K, V, A, ED, C, E>} param0 
+   * @param {WrappedPropertyDescriptor<O, K, V, A, N, C, E>} param0 
    */
   constructor(
     object: O,
@@ -170,11 +170,11 @@ export class WrappedDescriptor<
       previousDescriptor,
       privateKey,
       set,
-    }: WrappedPropertyDescriptor<O, K, V, A, ED, C, E, D> = {}
+    }: WrappedPropertyDescriptor<O, K, V, A, N, C, E, D> = {}
   ) {
     super(object, key, { configurable, enumerable, get, set });
     this.#active = (active || WrappedDescriptor.active) as A;
-    this.#enabled = (enabled || WrappedDescriptor.enabled) as ED;
+    this.#enabled = (enabled || WrappedDescriptor.enabled) as N;
     typeof index === 'number' && (this.#index = index);
     this.#key = key;
     this.#onGet = onGet;
@@ -211,7 +211,7 @@ export class WrappedDescriptor<
    * @inheritdoc
    */
   public disable(): this {
-    this.#enabled = false as ED;
+    this.#enabled = false as N;
     return this;
   }
 
@@ -219,7 +219,7 @@ export class WrappedDescriptor<
    * @inheritdoc
    */
   public enable(): this {
-    this.#enabled = true as ED;
+    this.#enabled = true as N;
     return this;
   }
 }
