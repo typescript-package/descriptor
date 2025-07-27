@@ -9,11 +9,11 @@ import { PropertyDescriptorChain, ThisAccessorPropertyDescriptor } from "@typedl
  * @template {keyof O} [K=keyof O] The type of the property name in the object.
  * @template {K extends keyof O ? O[K] : any} [V=K extends keyof O ? O[K] : any] The value type of the property in the object.
  * @template {boolean} [A=boolean] The type of the active state of the descriptor.
- * @template {boolean} [ED=boolean] The enabled state of the descriptor.
+ * @template {boolean} [N=boolean] The enabled state of the descriptor.
  * @template {boolean} [C=boolean] The configurable state of the descriptor.
  * @template {boolean} [E=boolean] The enumerable state of the descriptor.
  * @template {ThisAccessorPropertyDescriptor<V, O, C, E>} [D=ThisAccessorPropertyDescriptor<V, O, C, E>] The strict property descriptor type.
- * @implements {PropertyDescriptorChain<O, K, V, A, ED, C, E, D>}
+ * @implements {PropertyDescriptorChain<O, K, V, A, N, C, E, D>}
  */
 export abstract class DescriptorChainCore<
   // Object.
@@ -25,14 +25,14 @@ export abstract class DescriptorChainCore<
   // Active.
   A extends boolean = boolean,
   // Enabled.
-  ED extends boolean = boolean,
+  N extends boolean = boolean,
   // Configurable.
   C extends boolean = boolean,
   // Enumerable.
   E extends boolean = boolean,
   // Descriptor
   D extends ThisAccessorPropertyDescriptor<V, O, C, E> = ThisAccessorPropertyDescriptor<V, O, C, E>,
-> implements PropertyDescriptorChain<O, K, V, A, ED, C, E, D> {
+> implements PropertyDescriptorChain<O, K, V, A, N, C, E, D> {
   //#region Getter
   /**
    * @description The active state of the descriptor chain.
@@ -61,9 +61,9 @@ export abstract class DescriptorChainCore<
    * @description The enabled state of the descriptor chain.
    * @abstract
    * @readonly
-   * @type {ED}
+   * @type {N}
    */
-  abstract get enabled(): ED;
+  abstract get enabled(): N;
 
   /**
    * @description The last index of the descriptor chain.

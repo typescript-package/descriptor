@@ -12,7 +12,7 @@ import { StrictPropertyDescriptor, ThisAccessorPropertyDescriptor } from "@typed
  * @template {keyof O} [K=keyof O] The type of the property name in the object.
  * @template {K extends keyof O ? O[K] : any} [V=K extends keyof O ? O[K] : any] The type of the value accessed by the property.
  * @template {boolean} [A=boolean] The type of active property.
- * @template {boolean} [ED=boolean] The type of enabled property.
+ * @template {boolean} [N=boolean] The type of enabled property.
  * @template {boolean} [C=boolean] The type of configurable property.
  * @template {boolean} [E=boolean] The type of enumerable property.
  * @template {ThisAccessorPropertyDescriptor<V, O, C, E>} [D=ThisAccessorPropertyDescriptor<V, O, C, E>] The type of strict property descriptor.
@@ -27,14 +27,14 @@ export class DescriptorChain<
   // Active.
   A extends boolean = boolean,
   // Enabled.
-  ED extends boolean = boolean,
+  N extends boolean = boolean,
   // Configurable.
   C extends boolean = boolean,
   // Enumerable.
   E extends boolean = boolean,
   // Descriptor
   D extends ThisAccessorPropertyDescriptor<V, O, C, E> = ThisAccessorPropertyDescriptor<V, O, C, E>,
-> implements DescriptorChainCore<O, K, V, A, ED, C, E, D> {
+> implements DescriptorChainCore<O, K, V, A, N, C, E, D> {
   /**
    * @inheritdoc
    */
@@ -59,8 +59,8 @@ export class DescriptorChain<
   /**
    * @inheritdoc
    */
-  public get enabled(): ED {
-    return false as ED
+  public get enabled(): N {
+    return false as N
   }
 
   /**
