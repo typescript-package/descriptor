@@ -3,7 +3,7 @@ import { WrappedDescriptorBase } from './wrapped-descriptor-base.abstract';
 // Interface.
 import { WrappedPropertyDescriptor } from '@typedly/descriptor';
 // Type.
-import { GetterCallback, ValidationCallback, SetterCallback } from '@typedly/callback';
+import { GetterCallback, SetterCallback } from '@typedly/callback';
 /**
  * @description 
  * @export
@@ -32,7 +32,18 @@ export class WrappedDescriptor<
   C extends boolean = boolean,
   // Enumerable.
   E extends boolean = boolean,
-> extends WrappedDescriptorBase<O, K, V, A, ED, C, E> {
+  D extends WrappedDescriptor<O, K, V, A, ED, C, E, D> = WrappedDescriptor<O, K, V, A, ED, C, E, any>
+> extends WrappedDescriptorBase<O, K, V, A, ED, C, E, D> {
+  /**
+   * @description The string tag for the descriptor.
+   * @public
+   * @readonly
+   * @type {string}
+   */
+  public get [Symbol.toStringTag](): string {
+    return 'WrappedDescriptor';
+  }
+
   /**
    * @inheritdoc
    */
@@ -47,8 +58,18 @@ export class WrappedDescriptor<
     return this.#enabled;
   }
 
+  /**
+   * @inheritdoc
+   */
   public get index() {
     return this.#index;
+  }
+
+  /**
+   * @inheritdoc
+   */
+  public get key() {
+    return this.#key;
   }
 
   /**
@@ -95,41 +116,48 @@ export class WrappedDescriptor<
    * @description Privately stored index of the descriptor in the chain.
    * @type {number}
    */
-  #index: number = 0;
+  #index?: number = undefined;
+
+  /**
+   * @description
+   * @type {K}
+   */
+  #key: K;
 
   /**
    * @description Privately stored previous descriptor.
-   * @type {(WrappedPropertyDescriptor<O, K, V, A, ED, C, E> | PropertyDescriptor | undefined)}
+   * @type {?(D | PropertyDescriptor)}
    */
-  #previousDescriptor: WrappedPropertyDescriptor<O, K, V, A, ED, C, E> | PropertyDescriptor | undefined = undefined;
+  #previousDescriptor?: 'value' extends keyof D ? PropertyDescriptor : D;
 
   /**
    * @description Privately stored private key for the descriptor.
-   * @type {(PropertyKey | undefined)}
+   * @type {PropertyKey}
    */
-  #privateKey: PropertyKey | undefined = undefined;
+  #privateKey: PropertyKey;
 
   /**
    * @description Privately stored getter callback for the descriptor.
-   * @type {(GetterCallback<O, K> | undefined)}
+   * @type {?GetterCallback<O, K>}
    */
-  #onGet: GetterCallback<O, K> | undefined = undefined;
+  #onGet?: GetterCallback<O, K>;
 
   /**
    * @description Privately stored setter callback for the descriptor.
-   * @type {(SetterCallback<O, K> | undefined)}
+   * @type {?SetterCallback<O, K>}
    */
-  #onSet: SetterCallback<O, K> | undefined = undefined;
+  #onSet?: SetterCallback<O, K>;
 
   /**
    * Creates an instance of `WrappedDescriptor`.
    * @constructor
-   * @param {WrappedPropertyDescriptor<O, K, V, A, ED, C, E>} param0 
    * @param {O} object 
-   * @param {K} key 
-   * @param {?ValidationCallback<WrappedPropertyDescriptor<O, K, V, A, ED, C, E>>} [onValidate] 
+   * @param {K} key
+   * @param {WrappedPropertyDescriptor<O, K, V, A, ED, C, E>} param0 
    */
   constructor(
+    object: O,
+    key: K,
     {
       active,
       configurable,
@@ -142,19 +170,56 @@ export class WrappedDescriptor<
       previousDescriptor,
       privateKey,
       set,
-    }: WrappedPropertyDescriptor<O, K, V, A, ED, C, E>,
-    object: O,
-    key: K,
-    onValidate?: ValidationCallback<WrappedPropertyDescriptor<O, K, V, A, ED, C, E>>
+    }: WrappedPropertyDescriptor<O, K, V, A, ED, C, E, D> = {}
   ) {
-    super({ configurable, enumerable, get, set }, object, key, onValidate);
-
-    this.#active = active as A;
-    this.#enabled = enabled as ED;
+    super(object, key, { configurable, enumerable, get, set });
+    this.#active = (active || WrappedDescriptor.active) as A;
+    this.#enabled = (enabled || WrappedDescriptor.enabled) as ED;
     typeof index === 'number' && (this.#index = index);
+    this.#key = key;
     this.#onGet = onGet;
     this.#onSet = onSet;
-    this.#previousDescriptor = previousDescriptor;
-    this.#privateKey = privateKey;
+    this.#previousDescriptor = previousDescriptor
+      || {
+        ...{enabled: true},
+        ...Object.getOwnPropertyDescriptor(object, key)
+      } as any;
+
+    // Set the private key.
+    this.#privateKey = privateKey || `_${String(key)}` as PropertyKey;
+    // Wrap the property.
+    super.wrap({ get, set });
+  }
+
+  /**
+   * @inheritdoc
+   */
+  public activate(): this {
+    this.#active = true as A;
+    return this;
+  }
+
+  /**
+   * @inheritdoc
+   */
+  public deactivate(): this {
+    this.#active = false as A;
+    return this;
+  }
+
+  /**
+   * @inheritdoc
+   */
+  public disable(): this {
+    this.#enabled = false as ED;
+    return this;
+  }
+
+  /**
+   * @inheritdoc
+   */
+  public enable(): this {
+    this.#enabled = true as ED;
+    return this;
   }
 }
