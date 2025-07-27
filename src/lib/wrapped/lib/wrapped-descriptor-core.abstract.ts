@@ -1,5 +1,5 @@
-// Class.
-import { AccessorDescriptor } from '../../accessor-descriptor.class';
+// Abstract.
+import { CommonDescriptor } from '../../common-descriptor.abstract';
 // Interface.
 import { WrappedPropertyDescriptor } from '@typedly/descriptor';
 // Type.
@@ -12,11 +12,13 @@ import { GetterCallback, SetterCallback } from '@typedly/callback';
  * @template [O=any] The type of the object to define the descriptor on.
  * @template {keyof O} [K=keyof O] The key of the object to define the descriptor on.
  * @template {K extends keyof O ? O[K] : any} [V=K extends keyof O ? O[K] : any] The value type of the key in the object.
- * @template {boolean} [A=boolean] Whether the descriptor is active.
- * @template {boolean} [ED=boolean] Whether the descriptor is enabled.
- * @template {boolean} [C=boolean] Whether the descriptor is configurable.
- * @template {boolean} [E=boolean] Whether the descriptor is enumerable.
- * @extends {AccessorDescriptor<O, K, V, C, E>}
+ * @template {boolean} [A=boolean] The type of active.
+ * @template {boolean} [ED=boolean] The type of enabled.
+ * @template {boolean} [C=boolean] The type of configurable.
+ * @template {boolean} [E=boolean] The type of enumerable.
+ * @template {WrappedDescriptorCore<O, K, V, A, ED, C, E, D>} [D=WrappedDescriptorCore<O, K, V, A, ED, C, E, any>] 
+ * @extends {CommonDescriptor<C, E>}
+ * @implements {WrappedPropertyDescriptor<O, K, V, A, ED, C, E, D>}
  */
 export abstract class WrappedDescriptorCore<
   // Object.
@@ -33,8 +35,10 @@ export abstract class WrappedDescriptorCore<
   C extends boolean = boolean,
   // Enumerable.
   E extends boolean = boolean,
-> extends AccessorDescriptor<O, K, V, C, E>
-  implements WrappedPropertyDescriptor<O, K, V, A, ED, C, E> {
+  // The type of the previous and current descriptor.
+  D extends WrappedDescriptorCore<O, K, V, A, ED, C, E, D> = WrappedDescriptorCore<O, K, V, A, ED, C, E, any>
+> extends CommonDescriptor<C, E>
+  implements WrappedPropertyDescriptor<O, K, V, A, ED, C, E, D> {
   /**
    * @description Whether the descriptor is active.
    * If `true`, the descriptor is active.
@@ -57,12 +61,20 @@ export abstract class WrappedDescriptorCore<
   abstract get enabled(): ED;
 
   /**
-   * @description
+   * @description The object key to define the descriptor on.
    * @abstract
    * @readonly
-   * @type {number}
+   * @type {K}
    */
-  abstract get index(): number;
+  abstract get key(): K;
+
+  /**
+   * @description The index of the descriptor in the chain.
+   * @abstract
+   * @readonly
+   * @type {number | undefined}
+   */
+  abstract get index(): number | undefined;
 
   /**
    * @description The custom getter function for the descriptor.
@@ -79,20 +91,34 @@ export abstract class WrappedDescriptorCore<
    * @type {(SetterCallback<O, K> | undefined)}
    */
   abstract get onSet(): SetterCallback<O, K> | undefined;
-
+  
   /**
    * @description The previous descriptor that this descriptor wraps.
    * @abstract
    * @readonly
-   * @type {(WrappedPropertyDescriptor<O, K, V, A, ED, C, E> | PropertyDescriptor | undefined)}
+   * @type {(D | PropertyDescriptor | undefined)}
    */
-  abstract get previousDescriptor(): WrappedPropertyDescriptor<O, K, V, A, ED, C, E> | PropertyDescriptor | undefined;
+  abstract get previousDescriptor(): D | PropertyDescriptor | undefined;
 
   /**
    * @description The private key used to store the value in the object.
    * @abstract
    * @readonly
-   * @type {(PropertyKey | undefined)}
+   * @type {PropertyKey}
    */
-  abstract get privateKey(): PropertyKey | undefined;
+  abstract get privateKey(): PropertyKey;
+ 
+  //#region Accessor descriptor.  
+  /**
+   * @description The getter function.
+   * @type {?(this: O, descriptor?: D) => V}
+   */
+  get?: (this: O, descriptor?: D) => V;
+
+  /**
+   * @description The setter function.
+   * @type {?(this: O, value: V, descriptor?: D) => void}
+   */
+  set?: (this: O, value: V, descriptor?: D) => void;
+  //#endregion
 }
