@@ -91,14 +91,14 @@ export abstract class WrappedDescriptorCore<
    * @type {(SetterCallback<O, K> | undefined)}
    */
   abstract get onSet(): SetterCallback<O, K> | undefined;
-  
+
   /**
    * @description The previous descriptor that this descriptor wraps.
    * @abstract
    * @readonly
-   * @type {(D | PropertyDescriptor | undefined)}
+   * @type {('value' extends keyof D ? PropertyDescriptor : D) | undefined}
    */
-  abstract get previousDescriptor(): D | PropertyDescriptor | undefined;
+  abstract get previousDescriptor(): ('value' extends keyof D ? PropertyDescriptor : D) | undefined;
 
   /**
    * @description The private key used to store the value in the object.
