@@ -1,5 +1,5 @@
 // Abstract.
-import { CommonDescriptor } from '../../common-descriptor.abstract';
+import { CommonDescriptor } from '../../';
 // Interface.
 import { WrappedPropertyDescriptor } from '@typedly/descriptor';
 // Type.
@@ -61,7 +61,7 @@ export abstract class WrappedDescriptorCore<
   abstract get enabled(): N;
   
   /**
-   * @description
+   * @description The `get` getter for the descriptor.
    * @abstract
    * @readonly
    * @type {((this: O, descriptor?: D) => V) | undefined}
@@ -117,7 +117,7 @@ export abstract class WrappedDescriptorCore<
   abstract get privateKey(): PropertyKey;
 
   /**
-   * @description The setter function.
+   * @description The `set` getter for the descriptor.
    * @abstract
    * @readonly
    * @type {((this: O, value: V, descriptor?: D) => void) | undefined}
