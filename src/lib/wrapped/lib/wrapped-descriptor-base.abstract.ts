@@ -77,13 +77,6 @@ export abstract class WrappedDescriptorBase<
   /**
    * @inheritdoc
    */
-  public get get() {
-    return this.#get;
-  }
-
-  /**
-   * @inheritdoc
-   */
   public get index() {
     return this.#index;
   }
@@ -122,14 +115,6 @@ export abstract class WrappedDescriptorBase<
   public get privateKey() {
     return this.#privateKey;
   }
-
-  /**
-   * @inheritdoc
-   */
-  public get set() {
-    return this.#set;
-  }
-
   
   /**
    * @description The active state of the descriptor.
@@ -142,12 +127,6 @@ export abstract class WrappedDescriptorBase<
    * @type {N}
    */
   #enabled;
-
-  /**
-   * @description The `get` method for the descriptor.
-   * @type {((this: O, descriptor?: D | undefined) => V) | undefined}
-   */
-  #get;
 
   /**
    * @description The index of the descriptor in the chain.
@@ -186,12 +165,6 @@ export abstract class WrappedDescriptorBase<
   #privateKey;
 
   /**
-   * @description The `set` method for the descriptor.
-   * @type {((this: O, value: V, descriptor?: D | undefined) => void) | undefined}
-   */
-  #set;
-  
-  /**
    * Creates an instance of `WrappedDescriptorBase` child class.
    * @constructor
    * @param {O} object The object to define the descriptor on.
@@ -213,16 +186,6 @@ export abstract class WrappedDescriptorBase<
     this.#onSet = descriptor.onSet;
     this.#previousDescriptor = descriptor.previousDescriptor;
     this.#privateKey = descriptor.privateKey || Symbol(`_${String(key)}`);
-
-    // Wrap the property `get` and `set`.
-    const {get, set} = this.wrap({
-      get: descriptor.get,
-      set: descriptor.set 
-    });
-
-    // Assign the wrapped `get` and `set` methods.
-    this.#get = get;
-    this.#set = set;
   }
 
   /**
