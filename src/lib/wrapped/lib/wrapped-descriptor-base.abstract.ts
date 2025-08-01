@@ -130,23 +130,73 @@ export abstract class WrappedDescriptorBase<
     return this.#set;
   }
 
+  
+  /**
+   * @description The active state of the descriptor.
+   * @type {A | {onGet?: boolean | undefined; onSet?: boolean | undefined;}
+   */
   #active;
+
+  /**
+   * @description The enabled state of the descriptor.
+   * @type {N}
+   */
   #enabled;
+
+  /**
+   * @description The `get` method for the descriptor.
+   * @type {((this: O, descriptor?: D | undefined) => V) | undefined}
+   */
   #get;
+
+  /**
+   * @description The index of the descriptor in the chain.
+   * @type {number | undefined}
+   */
   #index;
+  
+  /**
+   * @description The key of the descriptor.
+   * @type {K}
+   */
   #key;
+
+  /**
+   * @description The on get hook function for the descriptor.
+   * @type {(GetterCallback<O, K> | undefined)}
+   */
   #onGet;
+
+  /**
+   * @description The on set hook function for the descriptor.
+   * @type {(SetterCallback<O, K> | undefined)}
+   */
   #onSet;
+
+  /**
+   * @description The previous descriptor in the chain.
+   * @type {D | PropertyDescriptor | undefined}
+   */
   #previousDescriptor;
+
+  /**
+   * @description The private key for the descriptor.
+   * @type {PropertyKey}
+   */
   #privateKey;
+
+  /**
+   * @description The `set` method for the descriptor.
+   * @type {((this: O, value: V, descriptor?: D | undefined) => void) | undefined}
+   */
   #set;
   
   /**
-   * Creates an instance of `WrappedDescriptorBase`.
+   * Creates an instance of `WrappedDescriptorBase` child class.
    * @constructor
-   * @param {O} object 
-   * @param {K} key 
-   * @param {WrappedPropertyDescriptor<O, K, V, A, N, C, E, D>} descriptor 
+   * @param {O} object The object to define the descriptor on.
+   * @param {K} key The key of the object to define the descriptor on.
+   * @param {WrappedPropertyDescriptor<O, K, V, A, N, C, E, D>} descriptor The property descriptor to wrap.
    */
   constructor(
     object: O,
@@ -157,14 +207,22 @@ export abstract class WrappedDescriptorBase<
     // Assign the properties.
     this.#active = descriptor.active || WrappedDescriptorBase.active as A;
     this.#enabled = descriptor.enabled || WrappedDescriptorBase.enabled as N;
-    this.#get = descriptor.get;
     this.#index = descriptor.index;
     this.#key = key;
     this.#onGet = descriptor.onGet;
     this.#onSet = descriptor.onSet;
     this.#previousDescriptor = descriptor.previousDescriptor;
     this.#privateKey = descriptor.privateKey || Symbol(`_${String(key)}`);
-    this.#set = descriptor.set;
+
+    // Wrap the property `get` and `set`.
+    const {get, set} = this.wrap({
+      get: descriptor.get,
+      set: descriptor.set 
+    });
+
+    // Assign the wrapped `get` and `set` methods.
+    this.#get = get;
+    this.#set = set;
   }
 
   /**
@@ -173,8 +231,8 @@ export abstract class WrappedDescriptorBase<
    * @param {WrappedPropertyDescriptor<O, K, V, A, N, C, E, D>} param0 The wrapped property `set` and `get` descriptor.
    */
   protected wrap({ get, set }: WrappedPropertyDescriptor<O, K, V, A, N, C, E, D>): {
-    get: (this: O) => V,
-    set: (this: O, value: V) => void
+    get: Pick<WrappedPropertyDescriptor<O, K, V, A, N, C, E, D>, 'get'>['get'],
+    set: Pick<WrappedPropertyDescriptor<O, K, V, A, N, C, E, D>, 'set'>['set']
   } {
     // Use descriptor instance.
     const descriptor = this;
