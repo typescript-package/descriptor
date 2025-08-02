@@ -1,5 +1,5 @@
 // Abstract.
-import { CommonDescriptor } from '../../';
+import { CommonDescriptor } from '../../common-descriptor.abstract';
 // Interface.
 import { WrappedPropertyDescriptor } from '@typedly/descriptor';
 // Type.
@@ -43,7 +43,7 @@ export abstract class WrappedDescriptorCore<
    * @description Whether the descriptor is active.
    * If `true`, the descriptor is active.
    * If an object, it can have `onGet` and `onSet` properties
-   * that indicate whether the `onGet` and `onSet` methods are active.
+   * that indicate whether the `onGet` and `onS et` methods are active.
    * @abstract
    * @readonly
    * @type {(A | { onGet?: boolean; onSet?: boolean })}
