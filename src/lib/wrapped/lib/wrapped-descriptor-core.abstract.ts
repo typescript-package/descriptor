@@ -36,7 +36,7 @@ export abstract class WrappedDescriptorCore<
   // Enumerable.
   E extends boolean = boolean,
   // The type of the previous and current descriptor.
-  D extends WrappedDescriptorCore<O, K, V, A, N, C, E, D> = WrappedDescriptorCore<O, K, V, A, N, C, E, any>
+  D extends WrappedPropertyDescriptor<O, K, V, A, N, C, E, D> = WrappedPropertyDescriptor<O, K, V, A, N, C, E, any>
 > extends CommonDescriptor<C, E>
   implements WrappedPropertyDescriptor<O, K, V, A, N, C, E, D> {
   /**
