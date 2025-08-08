@@ -57,40 +57,41 @@ export class WrappedDescriptor<
   public get set() {
     return this.#set;
   }
-
+  
   /**
    * @description The `get` method for the descriptor.
-   * @type {((this: O, descriptor?: D | undefined) => V) | undefined}
+   * @type {(this: O, descriptor?: D | undefined) => V}
    */
-  #get;
+  #get: (this: O, descriptor?: D | undefined) => V;
 
   /**
    * @description The `set` method for the descriptor.
-   * @type {((this: O, value: V, descriptor?: D | undefined) => void) | undefined}
+   * @type {(this: O, value: V, descriptor?: D | undefined) => void}
    */
-  #set;
+  #set: (this: O, value: V, descriptor?: D | undefined) => void;
 
   /**
    * Creates an instance of `WrappedDescriptor`.
    * @constructor
    * @param {O} object The object to define the descriptor on.
    * @param {K} key The key of the object to define the descriptor on.
-   * @param {WrappedPropertyDescriptor<O, K, V, A, N, C, E, D>} [descriptor={}] 
+   * @param {Partial<WrappedPropertyDescriptor<O, K, V, A, N, C, E, D>>} attributes
    */
   constructor(
     object: O,
     key: K,
-    descriptor: WrappedPropertyDescriptor<O, K, V, A, N, C, E, D> = {},
+    attributes: Partial<WrappedPropertyDescriptor<O, K, V, A, N, C, E, D>> = {},
   ) {
-    super(object, key, descriptor);
+    super(object, key, attributes);
 
     // Wrap the property `get` and `set`.
     const {get, set} = this.wrap({
-      get: descriptor.get,
-      set: descriptor.set 
+      get: attributes.get,
+      set: attributes.set 
     });
+
     // Assign the wrapped `get` and `set` methods.
-    this.#get = get;
-    this.#set = set;
+    this.#get = get!;
+    this.#set = set!;
   }
 }
