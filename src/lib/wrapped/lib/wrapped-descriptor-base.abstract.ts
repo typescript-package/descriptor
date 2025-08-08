@@ -38,30 +38,6 @@ export abstract class WrappedDescriptorBase<
   D extends WrappedDescriptorBase<O, K, V, A, N, C, E, D> = WrappedDescriptorBase<O, K, V, A, N, C, E, any>,
 > extends WrappedDescriptorCore<O, K, V, A, N, C, E, D> {
   /**
-   * @description The defaults for instance `active` property.
-   * @public
-   * @static
-   * @type {boolean}
-   */
-  public static active: boolean = true;
-
-  /**
-   * @description The defaults for instance `enabled` property.
-   * @public
-   * @static
-   * @type {boolean}
-   */
-  public static enabled: boolean = true;
-
-  /**
-   * @description The prefix for the private key.
-   * @public
-   * @static
-   * @type {string}
-   */
-  public static prefix: string = '_';
-
-  /**
    * @inheritdoc
    */
   public get active() {

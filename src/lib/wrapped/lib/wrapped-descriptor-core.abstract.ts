@@ -40,6 +40,30 @@ export abstract class WrappedDescriptorCore<
 > extends CommonDescriptor<C, E>
   implements WrappedPropertyDescriptor<O, K, V, A, N, C, E, D> {
   /**
+   * @description The defaults for instance `active` property.
+   * @public
+   * @static
+   * @type {boolean}
+   */
+  public static active: boolean = true;
+
+  /**
+   * @description The defaults for instance `enabled` property.
+   * @public
+   * @static
+   * @type {boolean}
+   */
+  public static enabled: boolean = true;
+
+  /**
+   * @description The prefix for the private key.
+   * @public
+   * @static
+   * @type {string}
+   */
+  public static prefix: string = '_';
+
+    /**
    * @description Whether the descriptor is active.
    * If `true`, the descriptor is active.
    * If an object, it can have `onGet` and `onSet` properties
