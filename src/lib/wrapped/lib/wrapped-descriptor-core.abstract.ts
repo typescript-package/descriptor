@@ -45,7 +45,6 @@ export abstract class WrappedDescriptorCore<
    * If an object, it can have `onGet` and `onSet` properties
    * that indicate whether the `onGet` and `onS et` methods are active.
    * @abstract
-   * @readonly
    * @type {(A | { onGet?: boolean; onSet?: boolean })}
    */
   abstract active: A | { onGet?: boolean; onSet?: boolean };
@@ -55,23 +54,20 @@ export abstract class WrappedDescriptorCore<
    * If `true`, the descriptor is enabled.
    * If `false`, the descriptor is disabled.
    * @abstract
-   * @readonly
    * @type {N}
    */
   abstract enabled: N;
-
+  
   /**
    * @description The `get` getter for the descriptor.
    * @abstract
-   * @readonly
-   * @type {((this: O, descriptor?: D) => V) | undefined}
+   * @type {(this: O, descriptor?: D) => V}
    */
-  abstract get?: (this: O, descriptor?: D) => V;
+  abstract get: (this: O, descriptor?: D) => V;
 
   /**
    * @description The index of the descriptor in the chain.
    * @abstract
-   * @readonly
    * @type {number | undefined}
    */
   abstract index?: number;
@@ -79,39 +75,34 @@ export abstract class WrappedDescriptorCore<
   /**
    * @description The object key to define the descriptor on.
    * @abstract
-   * @readonly
-   * @type {K}
+   * @type {K}  
    */
   abstract key: K;
 
   /**
    * @description The custom getter function for the descriptor.
    * @abstract
-   * @readonly
-   * @type {(GetterCallback<O, K> | undefined)}
+   * @type {?GetterCallback<O, K>}
    */
   abstract onGet?: GetterCallback<O, K>;
 
   /**
    * @description The custom setter function for the descriptor.
    * @abstract
-   * @readonly
-   * @type {(SetterCallback<O, K> | undefined)}
+   * @type {?SetterCallback<O, K>}
    */
   abstract onSet?: SetterCallback<O, K>;
 
   /**
    * @description The previous descriptor that this descriptor wraps.
    * @abstract
-   * @readonly
-   * @type {('value' extends keyof D ? PropertyDescriptor : D) | undefined}
+   * @type {?'value' extends keyof D ? PropertyDescriptor : D}
    */
   abstract previousDescriptor?: 'value' extends keyof D ? PropertyDescriptor : D;
 
   /**
    * @description The private key used to store the value in the object.
    * @abstract
-   * @readonly
    * @type {PropertyKey}
    */
   abstract privateKey: PropertyKey;
@@ -119,23 +110,19 @@ export abstract class WrappedDescriptorCore<
   /**
    * @description The `set` getter for the descriptor.
    * @abstract
-   * @readonly
-   * @type {((this: O, value: V, descriptor?: D) => void) | undefined}
+   * @type {(this: O, value: V, descriptor?: D) => void}
    */
-  abstract set?: (this: O, value: V, descriptor?: D) => void;
+  abstract set: (this: O, value: V, descriptor?: D) => void;
 
   /**
    * @description Wraps the property with the descriptor.
    * @protected
-   * @param {WrappedPropertyDescriptor<O, K, V, A, N, C, E, D>} param0 The wrapped property `set` and `get` descriptor.
+   * @param {Partial<WrappedPropertyDescriptor<O, K, V, A, N, C, E, D>>} param0 The wrapped property `set` and `get` descriptor.
+   * @returns {(Pick<WrappedPropertyDescriptor<O, K, V, A, N, C, E, D>, 'get' | 'set'>)} 
    */
-  protected wrap({ get, set }: WrappedPropertyDescriptor<O, K, V, A, N, C, E, D>): {
-    get: Pick<WrappedPropertyDescriptor<O, K, V, A, N, C, E, D>, 'get'>['get'],
-    set: Pick<WrappedPropertyDescriptor<O, K, V, A, N, C, E, D>, 'set'>['set']
-  } {
+  protected wrap({ get, set }: Partial<WrappedPropertyDescriptor<O, K, V, A, N, C, E, D>>): Pick<WrappedPropertyDescriptor<O, K, V, A, N, C, E, D>, 'get' | 'set'> {
     // Use descriptor instance.
     const descriptor = this;
-
     // Return the wrapped property.
     return {
       get: get
@@ -206,5 +193,4 @@ export abstract class WrappedDescriptorCore<
           }
         }};
   }
-
 }
