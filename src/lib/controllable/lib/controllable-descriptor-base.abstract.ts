@@ -24,22 +24,6 @@ export abstract class ControllableDescriptorBase<
   D extends ControllablePropertyDescriptor<O, K, V, A, N, C, E, D> = ControllablePropertyDescriptor<O, K, V, A, N, C, E, any>,
 > extends ControllableDescriptorCore<O, K, V, A, N, C, E, D> {
   /**
-   * @description The defaults for instance `active` property.
-   * @public
-   * @static
-   * @type {boolean}
-   */
-  public static active: boolean = true;
-
-  /**
-   * @description The defaults for instance `enabled` property.
-   * @public
-   * @static
-   * @type {boolean}
-   */
-  public static enabled: boolean = true;
-
-  /**
    * @inheritdoc
    */
   public override get active() {
@@ -95,7 +79,7 @@ export abstract class ControllableDescriptorBase<
    * @inheritdoc
    */
   public override get previousDescriptor() {
-    return this.controller.previousDescriptor as ('value' extends keyof D ? PropertyDescriptor : D) | undefined;
+    return this.controller.previousDescriptor as ('value' extends keyof D ? PropertyDescriptor : D);
   }
 
   /**
@@ -109,14 +93,14 @@ export abstract class ControllableDescriptorBase<
    * @inheritdoc
    */
   public get get() {
-    return this.controller.get;
+    return this.controller.get!;
   }
 
   /**
    * @inheritdoc
    */
   public get set() {
-    return this.controller.set;
+    return this.controller.set!;
   }
 
   /**
@@ -130,27 +114,27 @@ export abstract class ControllableDescriptorBase<
    * @constructor
    * @param {O} object The object to define the descriptor on.
    * @param {K} key The key of the object to define the descriptor on.
-   * @param {WrappedPropertyDescriptor<O, K, V, A, N, C, E, D>} descriptor The property descriptor to wrap.
+   * @param {Partial<WrappedPropertyDescriptor<O, K, V, A, N, C, E, D>>} attributes The property descriptor to wrap.
    */
   constructor(
     object: O,
     key: K,
-    descriptor: WrappedPropertyDescriptor<O, K, V, A, N, C, E, D>,
+    attributes: Partial<WrappedPropertyDescriptor<O, K, V, A, N, C, E, D>>,
     controller: new (
       object: O,
       key: K,
-      descriptor: WrappedPropertyDescriptor<O, K, V, A, N, C, E, D>,
+      attributes: Partial<WrappedPropertyDescriptor<O, K, V, A, N, C, E, D>>,
     ) => WrappedPropertyDescriptorController<O, K, V, A, N, C, E, D>
   ) {
-    super({ configurable: descriptor.configurable, enumerable: descriptor.enumerable });
+    super({ configurable: attributes.configurable, enumerable: attributes.enumerable });
     // Set the controller.
     this.#controller = new controller(
       object,
       key, { 
-        ...descriptor,
+        ...attributes,
         ...super.wrap({
-          get: descriptor.get,
-          set: descriptor.set
+          get: attributes.get,
+          set: attributes.set
         })
       }
     );
