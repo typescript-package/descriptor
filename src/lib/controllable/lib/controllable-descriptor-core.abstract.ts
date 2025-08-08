@@ -23,5 +23,8 @@ export abstract class ControllableDescriptorCore<
   D extends ControllablePropertyDescriptor<O, K, V, A, N, C, E, D> = ControllablePropertyDescriptor<O, K, V, A, N, C, E, any>,
 > extends WrappedDescriptorCore<O, K, V, A, N, C, E, D>
   implements ControllablePropertyDescriptor<O, K, V, A, N, C, E, D> {
+  abstract override get active(): A | { onGet?: boolean; onSet?: boolean };
   abstract get controller(): WrappedPropertyDescriptorController<O, K, V, A, N, C, E, D>;
+  abstract override get enabled(): N;
+  abstract override get key(): K;
 }
