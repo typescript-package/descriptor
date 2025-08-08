@@ -2,6 +2,8 @@
 import { WrappedDescriptorCore } from './wrapped-descriptor-core.abstract';
 // Interface.
 import { WrappedPropertyDescriptor } from '@typedly/descriptor';
+// Type.
+import { GetterCallback, SetterCallback } from '@typedly/callback';
 /**
  * @description The base abstraction class for wrapped descriptors.
  * @export
@@ -52,6 +54,14 @@ export abstract class WrappedDescriptorBase<
   public static enabled: boolean = true;
 
   /**
+   * @description The prefix for the private key.
+   * @public
+   * @static
+   * @type {string}
+   */
+  public static prefix: string = '_';
+
+  /**
    * @inheritdoc
    */
   public get active() {
@@ -97,7 +107,7 @@ export abstract class WrappedDescriptorBase<
    * @inheritdoc
    */
   public get previousDescriptor() {
-    return this.#previousDescriptor as ('value' extends keyof D ? PropertyDescriptor : D) | undefined;
+    return this.#previousDescriptor as ('value' extends keyof D ? PropertyDescriptor : D);
   }
 
   /**
@@ -109,74 +119,98 @@ export abstract class WrappedDescriptorBase<
   
   /**
    * @description The active state of the descriptor.
-   * @type {A | {onGet?: boolean | undefined; onSet?: boolean | undefined;}
+   * @type {(A | {onGet?: boolean | undefined; onSet?: boolean | undefined;})}
    */
-  #active;
+  #active: A | {onGet?: boolean | undefined; onSet?: boolean | undefined;};
 
   /**
    * @description The enabled state of the descriptor.
    * @type {N}
    */
-  #enabled;
+  #enabled: N;
 
   /**
    * @description The index of the descriptor in the chain.
-   * @type {number | undefined}
+   * @type {?number}
    */
-  #index;
+  #index?: number;
   
   /**
    * @description The key of the descriptor.
    * @type {K}
    */
-  #key;
+  #key: K;
 
   /**
    * @description The on get hook function for the descriptor.
-   * @type {(GetterCallback<O, K> | undefined)}
+   * @type {?GetterCallback<O, K>}
    */
-  #onGet;
+  #onGet?: GetterCallback<O, K>;
 
   /**
    * @description The on set hook function for the descriptor.
-   * @type {(SetterCallback<O, K> | undefined)}
+   * @type {?SetterCallback<O, K>}
    */
-  #onSet;
+  #onSet?: SetterCallback<O, K>;
 
   /**
    * @description The previous descriptor in the chain.
-   * @type {D | PropertyDescriptor | undefined}
+   * @type {?'value' extends keyof D ? PropertyDescriptor : D}
    */
-  #previousDescriptor;
+  #previousDescriptor?: 'value' extends keyof D ? PropertyDescriptor : D;
 
   /**
    * @description The private key for the descriptor.
    * @type {PropertyKey}
    */
-  #privateKey;
+  #privateKey: PropertyKey;
 
   /**
    * Creates an instance of `WrappedDescriptorBase` child class.
    * @constructor
    * @param {O} object The object to define the descriptor on.
    * @param {K} key The key of the object to define the descriptor on.
-   * @param {WrappedPropertyDescriptor<O, K, V, A, N, C, E, D>} descriptor The property descriptor to wrap.
+   * @param {Partial<WrappedPropertyDescriptor<O, K, V, A, N, C, E, D>>} [attributes={}] The property descriptor attributes.
    */
   constructor(
     object: O,
     key: K, 
-    descriptor: WrappedPropertyDescriptor<O, K, V, A, N, C, E, D>,
+    attributes: Partial<WrappedPropertyDescriptor<O, K, V, A, N, C, E, D>> = {},
   ) {
-    super(descriptor);
+    super(attributes);
 
     // Assign the properties.
-    this.#active = typeof descriptor.active === 'boolean' || typeof descriptor.active === 'object' ? descriptor.active : WrappedDescriptorBase.active as A;
-    this.#enabled = typeof descriptor.enabled === 'boolean' || typeof descriptor.enabled === 'object' ? descriptor.enabled : WrappedDescriptorBase.enabled as N;
-    this.#index = descriptor.index;
+    // Required.
+    this.#active = typeof attributes.active === 'boolean' || typeof attributes.active === 'object' ? attributes.active : WrappedDescriptorBase.active as A;
+    this.#enabled = typeof attributes.enabled === 'boolean' || typeof attributes.enabled === 'object' ? attributes.enabled : WrappedDescriptorBase.enabled as N;
+    this.#privateKey = attributes.privateKey || `${WrappedDescriptorBase.prefix}${String(key)}`;
+
+    // Optional.
+    this.#index = attributes.index;
     this.#key = key;
-    this.#onGet = descriptor.onGet;
-    this.#onSet = descriptor.onSet;
-    this.#previousDescriptor = descriptor.previousDescriptor;
-    this.#privateKey = descriptor.privateKey || `_${String(key)}`;
+    this.#onGet = attributes.onGet;
+    this.#onSet = attributes.onSet;
+    this.#previousDescriptor = attributes.previousDescriptor as ('value' extends keyof D ? PropertyDescriptor : D);
+  }
+
+  /**
+   * @inheritdoc
+   * @public
+   * @returns {WrappedPropertyDescriptor<O, K, V, A, N, C, E, D>} 
+   */
+  public override valueOf(): WrappedPropertyDescriptor<O, K, V, A, N, C, E, D> {
+    return {
+      active: this.active,
+      configurable: this.configurable,
+      enabled: this.enabled,
+      enumerable: this.enumerable,
+      get: this.get,
+      index: this.index,
+      onGet: this.onGet,
+      onSet: this.onSet,
+      previousDescriptor: this.previousDescriptor,
+      privateKey: this.privateKey,
+      set: this.set,
+    };
   }
 }
