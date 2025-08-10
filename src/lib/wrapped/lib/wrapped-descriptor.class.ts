@@ -32,7 +32,7 @@ export class WrappedDescriptor<
   // Enumerable.
   E extends boolean = boolean,
   // Descriptor.
-  D extends WrappedDescriptor<O, K, V, A, N, C, E, D> = WrappedDescriptor<O, K, V, A, N, C, E, any>,
+  D extends WrappedDescriptor<O, K, V, A, N, C, E, D> | PropertyDescriptor = WrappedDescriptor<O, K, V, A, N, C, E, any>,
 > extends WrappedDescriptorBase<O, K, V, A, N, C, E, D> {
   /**
    * @description The string tag for the descriptor.
