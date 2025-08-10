@@ -122,6 +122,7 @@ export abstract class WrappedDescriptorCore<
    * @abstract
    * @type {?D}
    */
+  abstract previous?: D;
   abstract previousDescriptor?: D;
 
   /**
