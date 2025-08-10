@@ -36,7 +36,7 @@ export abstract class WrappedDescriptorCore<
   // Enumerable.
   E extends boolean = boolean,
   // The type of the previous and current descriptor.
-  D extends WrappedPropertyDescriptor<O, K, V, A, N, C, E, D> = WrappedPropertyDescriptor<O, K, V, A, N, C, E, any>
+  D extends WrappedPropertyDescriptor<O, K, V, A, N, C, E, D> | PropertyDescriptor = WrappedPropertyDescriptor<O, K, V, A, N, C, E, any>
 > extends CommonDescriptor<C, E>
   implements WrappedPropertyDescriptor<O, K, V, A, N, C, E, D> {
   /**
@@ -120,9 +120,9 @@ export abstract class WrappedDescriptorCore<
   /**
    * @description The previous descriptor that this descriptor wraps.
    * @abstract
-   * @type {?'value' extends keyof D ? PropertyDescriptor : D}
+   * @type {?D}
    */
-  abstract previousDescriptor?: 'value' extends keyof D ? PropertyDescriptor : D;
+  abstract previousDescriptor?: D;
 
   /**
    * @description The private key used to store the value in the object.
@@ -152,28 +152,29 @@ export abstract class WrappedDescriptorCore<
       get: get
         ? (function (this: O): V { return get?.call(this, descriptor as unknown as D) as V; })
         : (function (this: O): V {
-          if (descriptor.enabled === true) {
-            const o = (this as O);
+          const o = (this as O);
 
-            // Get the previous value from descriptor.
-            const previousValue = descriptor.previousDescriptor && (descriptor.previousDescriptor as WrappedPropertyDescriptor).enabled !== false
-              ? descriptor.previousDescriptor.get && typeof descriptor.previousDescriptor.get === 'function'
-                ? descriptor.previousDescriptor.get.call(this)
-                : 'value' in descriptor.previousDescriptor
-                  ? descriptor.previousDescriptor.value
-                  : undefined
-              : undefined;
+          // Check if the descriptor is active.
+          const active = (typeof descriptor.active === 'object' ? descriptor.active.onGet : descriptor.active) === true;
 
-            // Check if the descriptor is active.
-            const active = descriptor.active === true || (typeof descriptor.active === 'object' && descriptor.active.onGet);
+          // Check if the descriptor is enabled.
+          const enabled = (typeof descriptor.enabled === 'boolean' ? descriptor.enabled : WrappedDescriptorCore.enabled) === true;
 
-            // Current descriptor.
-            return descriptor.onGet && active === true
+          // Perform previous descriptor `get`.
+          let previousValue = descriptor.previousDescriptor && (descriptor.previousDescriptor as WrappedPropertyDescriptor).enabled !== false
+            ? 'value' in descriptor.previousDescriptor
+              ? (descriptor.previousDescriptor as PropertyDescriptor).value
+              : descriptor.previousDescriptor?.get
+                ? descriptor.previousDescriptor.get.call(o, descriptor.previousDescriptor as D)
+                : undefined as V
+            : undefined as V;
+
+          // Returns 
+          return enabled === true
+            ? descriptor.onGet && active === true
               ? descriptor.onGet.call(o, descriptor.key as K, previousValue, o[descriptor.privateKey as K] as V, o) as V
-              : o[descriptor.privateKey as K] as V;
-          } else {
-            return undefined as V;
-          }
+              : o[descriptor.privateKey as K] as V
+            : undefined as V;
         }
       ),
       set: set
@@ -181,31 +182,36 @@ export abstract class WrappedDescriptorCore<
           set?.call(this, value, descriptor as unknown as D);
         }
         : function(this: O, value: V): void {
-          if (descriptor.enabled === true) {
-            // Set the this as the target object.
-            const o = (this as O);
+          // Set the this as the target object.
+          const o = (this as O);
 
-            // Get the previous value from previous descriptor or current value.
-            const previousValue = o[descriptor.privateKey as K] as V
-              || (
-                descriptor.previousDescriptor && (descriptor.previousDescriptor as WrappedPropertyDescriptor).enabled !== false
-                  ? descriptor.previousDescriptor.get
-                    ? descriptor.previousDescriptor.get.call(this)
-                    : 'value' in descriptor.previousDescriptor
-                      ? descriptor.previousDescriptor.value
-                      : undefined
-                  : undefined
-              ) as V;
+          // Check if the descriptor is active.
+          const active = (typeof descriptor.active === 'object' ? descriptor.active.onSet : descriptor.active) === true;
 
-            // Check if the descriptor is active.
-            const active = descriptor.active === true || (typeof descriptor.active === 'object' && descriptor.active.onSet);
+          // Check if the descriptor is enabled.
+          const enabled = (typeof descriptor.enabled === 'boolean' ? descriptor.enabled : WrappedDescriptorCore.enabled) === true;
 
-            // Perform previous descriptor.
-            descriptor.previousDescriptor?.set
-              && (descriptor.previousDescriptor as WrappedPropertyDescriptor).enabled !== false
-              && descriptor.previousDescriptor.set.call(o, value, descriptor.previousDescriptor as D);
+          // Initialize `previousValue`.
+          let previousValue: V = undefined as V;
 
-            // Set the private property value.
+          // Get the previous value from previous descriptor or current value.
+          if (enabled === true) {
+            previousValue = descriptor.previousDescriptor && (descriptor.previousDescriptor as WrappedPropertyDescriptor).enabled !== false
+              ? 'value' in descriptor.previousDescriptor
+                ? (descriptor.previousDescriptor as PropertyDescriptor).value
+                : (descriptor.previousDescriptor as WrappedPropertyDescriptor).privateKey
+                  ? o[(descriptor.previousDescriptor as WrappedPropertyDescriptor).privateKey as K] as V
+                  : o[descriptor.privateKey as K] as V
+              : o[descriptor.privateKey as K] as V;
+          }
+
+          // Perform previous descriptor.
+          descriptor.previousDescriptor?.set
+            && (descriptor.previousDescriptor as WrappedPropertyDescriptor).enabled !== false
+            && descriptor.previousDescriptor.set.call(o, value, descriptor.previousDescriptor as D);
+
+          if (enabled === true) {
+            // Set the value under the `privateKey`.
             Object.assign(
               o as any,
               {
