@@ -35,7 +35,7 @@ export abstract class WrappedDescriptorBase<
   // Enumerable.
   E extends boolean = boolean,
   // The type of the previous descriptor.
-  D extends WrappedDescriptorBase<O, K, V, A, N, C, E, D> = WrappedDescriptorBase<O, K, V, A, N, C, E, any>,
+  D extends WrappedDescriptorBase<O, K, V, A, N, C, E, D> | PropertyDescriptor = WrappedDescriptorBase<O, K, V, A, N, C, E, any>,
 > extends WrappedDescriptorCore<O, K, V, A, N, C, E, D> {
   /**
    * @inheritdoc
@@ -79,11 +79,14 @@ export abstract class WrappedDescriptorBase<
     return this.#onSet;
   }
 
+  public get previous() {
+    return this.#previous;
+  }
   /**
    * @inheritdoc
    */
   public get previousDescriptor() {
-    return this.#previousDescriptor as ('value' extends keyof D ? PropertyDescriptor : D);
+    return this.#previous;
   }
 
   /**
@@ -131,9 +134,9 @@ export abstract class WrappedDescriptorBase<
 
   /**
    * @description The previous descriptor in the chain.
-   * @type {?'value' extends keyof D ? PropertyDescriptor : D}
+   * @type {?D}
    */
-  #previousDescriptor?: 'value' extends keyof D ? PropertyDescriptor : D;
+  #previous?: D;
 
   /**
    * @description The private key for the descriptor.
@@ -166,7 +169,7 @@ export abstract class WrappedDescriptorBase<
     this.#key = key;
     this.#onGet = attributes.onGet;
     this.#onSet = attributes.onSet;
-    this.#previousDescriptor = attributes.previousDescriptor as ('value' extends keyof D ? PropertyDescriptor : D);
+    this.#previous = attributes.previousDescriptor;
   }
 
   /**
