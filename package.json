@@ -10,7 +10,7 @@
   },
   "peerDependencies": {
     "@typedly/callback": "^1.0.0",
-    "@typedly/descriptor": "^9.0.0"
+    "@typedly/descriptor": "^10.0.0"
   },
   "scripts": {
     "prepublishOnly": "npm run pkg && npm run clean",
