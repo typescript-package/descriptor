@@ -41,6 +41,11 @@ A **lightweight** TypeScript library for property descriptor.
 - [License](#license)
 - [Related packages](#related-packages)
 
+## Note
+
+- `Descriptors` moved to the [`@typescript-package/descriptors`](https://github.com/typescript-package/descriptors).
+- `PropertyDescriptorChain` moved to the [`@typescript-package/descriptor-chain`](https://github.com/typescript-package/descriptor-chain).
+
 ## Installation
 
 Install peer dependencies
@@ -135,6 +140,7 @@ MIT © typescript-package ([license][typescript-package-license])
 - **[@typescript-package/chain-descriptor](https://github.com/typescript-package/chain-descriptor)**: A **TypeScript** library for chain property descriptor.
 - **[@typescript-package/controller](https://github.com/typescript-package/controller)**: A **TypeScript** package with for various kind of controllers.
 - **[@typescript-package/descriptor](https://github.com/typescript-package/descriptor)**: A **TypeScript** library for property descriptor.
+- **[@typescript-package/descriptor-chain](https://github.com/typescript-package/descriptor-chain)**: A **TypeScript** library for property descriptor chain.
 - **[@typescript-package/descriptors](https://github.com/typescript-package/descriptors)**: A **TypeScript** library for property descriptors.
 - **[@typescript-package/property](https://github.com/typescript-package/property)**: A **TypeScript** package with features to handle object properties.
 - **[@typescript-package/wrap-descriptor](https://github.com/typescript-package/wrap-descriptor)**: A **TypeScript** package for wrapping object descriptors.
