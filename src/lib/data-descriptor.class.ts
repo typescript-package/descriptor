@@ -189,7 +189,7 @@ export class DataDescriptor<
     onValidate && DataDescriptor.guard({ configurable, enumerable, value, writable }, onValidate);
     super({ configurable, enumerable });
     delete this.writable;
-    typeof writable === 'boolean' && (this.writable = writable as W);
+    typeof writable !== 'undefined' && (this.writable = writable);
     this.value = value;
   }
 }
