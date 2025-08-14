@@ -29,7 +29,8 @@ export class DataDescriptor<
   E extends boolean = boolean,
   // Writable.
   W extends boolean = boolean
-> extends CommonDescriptor<C, E> implements DataPropertyDescriptor<V, C, E, W> {
+> extends CommonDescriptor<C, E>
+  implements DataPropertyDescriptor<V, C, E, W> {
   /**
    * @description Creates an instance of `DataDescriptor`.
    * @public
@@ -48,7 +49,7 @@ export class DataDescriptor<
    * @param {?O} [object] The object (non-stored) to define the descriptor on. The object is optional, if not provided the descriptor will be created without an object.
    * @param {?K} [key] The property key to define the descriptor on. The key is optional, if not provided the descriptor will be created without a key.
    * @param {?ValidationCallback<DataPropertyDescriptor<V, C, E, W>>} [onValidate] An optional validation callback to validate the descriptor.
-   * @returns {(DataDescriptor<O, K, V, C, E, W> | undefined)} 
+   * @returns {(DataDescriptor<O, K, V, C, E, W> | undefined)} The returned 
    */
   public static create<
     O = any,
@@ -72,14 +73,24 @@ export class DataDescriptor<
   }
 
   /**
-   * @description Returns strictly defined data descriptor of a `DataPropertyDescriptor<Value>` interface on `writable` or `value` property detected.
-   * Strictly means, parameter `descriptor` is type guarded and method picks `configurable`, `enumerable`, `writable`, `value`
-   * properties from the provided `descriptor` object.
-   * @param descriptor An `object` of a `DataPropertyDescriptor<Value>` interface, to set with the default values of the
-   * `CommonDescriptor`.
-   * @param onValidate An optional `ResultCallback` function to handle the result of the check whether or not the `descriptor` is an `object`
-   * with the `writable` or `value` property, by default it uses `dataCallback()` function from the static `guard()` method.
-   * @returns The return value is an `object` of a `DataPropertyDescriptor<Value>` interface.
+   * @description Returns strictly defined data descriptor of a `DataPropertyDescriptor<V, C, E, W>` interface on `writable` or `value` property detected.
+   * @public
+   * @static
+   * @template [O=any] The type of the object.
+   * @template {PropertyKey | keyof O} [K=keyof O] The type of the object key.
+   * @template [V=K extends keyof O ? O[K] : any] The type of value.
+   * @template {boolean} [C=boolean] The type of configurable.
+   * @template {boolean} [E=boolean] The type of enumerable.
+   * @template {boolean} [W=boolean] The type of writable.
+   * @param {DataPropertyDescriptor<V, C, E, W>} param0 An `object` of a `DataPropertyDescriptor<V, C, E, W>` interface, to set with the default values of the `CommonDescriptor`.
+   * @param {DataPropertyDescriptor<V, C, E, W>} param0.configurable The descriptor configurable.
+   * @param {DataPropertyDescriptor<V, C, E, W>} param0.enumerable The descriptor enumerable.
+   * @param {DataPropertyDescriptor<V, C, E, W>} param0.value The descriptor value.
+   * @param {DataPropertyDescriptor<V, C, E, W>} param0.writable The descriptor writable.
+   * @param {?O} [object] The object (non-stored) to define the descriptor on. The object is optional, if not provided the descriptor will be created without an object.
+   * @param {?K} [key] The (non-stored) key to define the descriptor on.
+   * @param {?ValidationCallback<DataPropertyDescriptor<V, C, E, W>>} [onValidate] An optional `ResultCallback` function to handle the result of the check whether or not the `descriptor` is an `object with the `writable` or `value` property, by default it uses `dataCallback()` function from the static `guard()` method.
+   * @returns {(DataPropertyDescriptor<V, C, E, W> | undefined)} The return value is an `object` of a `DataPropertyDescriptor<V, C, E, W>` interface.
    */
   public static define<
     O = any,
@@ -108,12 +119,15 @@ export class DataDescriptor<
 
   /**
    * @description Guards the `descriptor` to be an `object` of a `DataPropertyDescriptor<Value>` interface.
-   * @param descriptor Object of a `DataPropertyDescriptor<Value>` interface to guard.
-   * @param callbackFn A `ResultCallback` function to handle the result of the check whether or not the `descriptor`
-   * is an `object` with the `writable` or `value` property, by default it uses `dataCallback()` function.
-   * @throws Throws an error if the `descriptor` is not an `object` of a `DataPropertyDescriptor<Value>` interface, which means doesn't
-   * contain `writable` or `value` property.
-   * @returns The return value is a `boolean` indicating whether the `descriptor` is an `object` with the `writable` or `value` property.
+   * @public
+   * @static
+   * @template V The type of the value.
+   * @template {boolean} [C=boolean] The type of configurable.
+   * @template {boolean} [E=boolean] The type of enumerable.
+   * @template {boolean} [W=boolean] The type of writable.
+   * @param {DataPropertyDescriptor<V, C, E, W>} descriptor Object of a `DataPropertyDescriptor<Value>` interface to guard.
+   * @param {?ValidationCallback<DataPropertyDescriptor<V, C, E, W>>} [callbackFn] A `ResultCallback` function to handle the result of the check whether or not the `descriptor` is an `object` with the `writable` or `value` property, by default it uses `dataCallback()` function.
+   * @returns {descriptor is DataPropertyDescriptor<V, C, E, W>} The return value is a `boolean` indicating whether the `descriptor` is an `object` with the `writable` or `value` property.
    */
   public static guard<
     V,
@@ -133,7 +147,7 @@ export class DataDescriptor<
   }
 
   /**
-   * @description Default writable.
+   * @description Defaults to writable.
    * @public
    * @static
    * @type {?boolean}
@@ -164,7 +178,7 @@ export class DataDescriptor<
    * @param {DataPropertyDescriptor<V, C, E, W>} param0.writable The writable for data descriptor.
    * @param {?O} [object] The object (non-stored) to define the descriptor on. The object is optional, if not provided the descriptor will be created without an object.
    * @param {?K} [key] The (non-stored) key to define the descriptor on.
-   * @param {?ValidationCallback<DataPropertyDescriptor<V, C, E, W>>} [onValidate] 
+   * @param {?ValidationCallback<DataPropertyDescriptor<V, C, E, W>>} [onValidate] Optional callback function to determine the validity of the descriptor.
    */
   constructor(
     { configurable, enumerable, value, writable }: DataPropertyDescriptor<V, C, E, W>,
