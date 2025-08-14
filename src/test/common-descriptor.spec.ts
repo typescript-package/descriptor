@@ -1,7 +1,11 @@
 import { CommonDescriptor } from "../lib/common-descriptor.abstract";
 
-
-export class CustomDescriptor extends CommonDescriptor {}
+export class CustomDescriptor<
+  C extends boolean = boolean,
+  E extends boolean = boolean
+> extends CommonDescriptor<
+C, E
+> {}
 
 const descriptor = new CustomDescriptor();
 const object = {};
@@ -11,7 +15,6 @@ console.log(descriptor);
 Object.defineProperty(object, 'name', descriptor);
 console.log(`object`, object);
 console.groupEnd();
-
 
 describe(`CommonDescriptor`, () => {
   it(`new`, () => {
