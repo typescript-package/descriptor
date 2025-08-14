@@ -89,7 +89,7 @@ export class DataDescriptor<
    * @param {DataPropertyDescriptor<V, C, E, W>} param0.writable The descriptor writable.
    * @param {?O} [object] The object (non-stored) to define the descriptor on. The object is optional, if not provided the descriptor will be created without an object.
    * @param {?K} [key] The (non-stored) key to define the descriptor on.
-   * @param {?ValidationCallback<DataPropertyDescriptor<V, C, E, W>>} [onValidate] An optional `ResultCallback` function to handle the result of the check whether or not the `descriptor` is an `object with the `writable` or `value` property, by default it uses `dataCallback()` function from the static `guard()` method.
+   * @param {?ValidationCallback<DataPropertyDescriptor<V, C, E, W>>} [onValidate] An optional `ResultCallback` function to handle the result of the check whether or not the `descriptor` is an `object` with the `writable` or `value` property, by default it uses `dataCallback()` function from the static `guard()` method.
    * @returns {(DataPropertyDescriptor<V, C, E, W> | undefined)} The return value is an `object` of a `DataPropertyDescriptor<V, C, E, W>` interface.
    */
   public static define<
