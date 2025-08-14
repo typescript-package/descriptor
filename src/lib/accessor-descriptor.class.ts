@@ -175,7 +175,7 @@ export class AccessorDescriptor<
     onValidate && AccessorDescriptor.guard({ configurable, enumerable, get, set }, onValidate);
     super({ configurable, enumerable });
     delete this.get, delete this.set;
-    get && (this.get = get);
-    set && (this.set = set);
+    'get' in arguments[0] && (this.get = get);
+    'set' in arguments[0] && (this.set = set);
   }
 }
