@@ -22,6 +22,11 @@ A **lightweight** TypeScript library for property descriptor.
 - Create the data descriptors for object properties with the `DataDescriptor` class.
 - Create accessor or data descriptor for object properties with `Descriptor` class.
 
+## Note
+
+- `Descriptors` moved to the [`@typescript-package/descriptors`](https://github.com/typescript-package/descriptors).
+- `PropertyDescriptorChain` moved to the [`@typescript-package/descriptor-chain`](https://github.com/typescript-package/descriptor-chain).
+
 ## Table of contents
 
 - [Installation](#installation)
@@ -40,11 +45,6 @@ A **lightweight** TypeScript library for property descriptor.
   - [Versioning](#versioning)
 - [License](#license)
 - [Related packages](#related-packages)
-
-## Note
-
-- `Descriptors` moved to the [`@typescript-package/descriptors`](https://github.com/typescript-package/descriptors).
-- `PropertyDescriptorChain` moved to the [`@typescript-package/descriptor-chain`](https://github.com/typescript-package/descriptor-chain).
 
 ## Installation
 
