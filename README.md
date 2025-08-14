@@ -16,16 +16,22 @@
 
 A **lightweight** TypeScript library for property descriptor.
 
+## Features
+
+- Create the accessor descriptors for object properties with the `AccessorDescriptor` class.
+- Create the data descriptors for object properties with the `DataDescriptor` class.
+- Create accessor or data descriptor for object properties with `Descriptor` class.
+
 ## Table of contents
 
 - [Installation](#installation)
 - [Api](#api)
-  - `AccessorDescriptor`
-  - `CommonDescriptor`
-  - `DataDescriptor`
-  - `Descriptor`
-  - `Descriptors`
-  - `PropertyDescriptorChain`
+  - Abstract
+    - `CommonDescriptor`
+  - Class
+    - `AccessorDescriptor`
+    - `DataDescriptor`
+    - `Descriptor`
 - [Contributing](#contributing)
 - [Support](#support)
 - [Code of Conduct](code-of-conduct)
@@ -53,12 +59,11 @@ npm install @typescript-package/descriptor --save-peer
 import {
   // Abstract.
   CommonDescriptor,
+
   // Class.
   AccessorDescriptor,
   DataDescriptor,
   Descriptor,
-  Descriptors,
-  PropertyDescriptorChain,
 } from '@typescript-package/descriptor';
 ```
 
@@ -126,6 +131,16 @@ How do I know when to release 1.0.0?
 MIT © typescript-package ([license][typescript-package-license])
 
 ## Related packages
+
+- **[@typescript-package/chain-descriptor](https://github.com/typescript-package/chain-descriptor)**: A **TypeScript** library for chain property descriptor.
+- **[@typescript-package/controller](https://github.com/typescript-package/controller)**: A **TypeScript** package with for various kind of controllers.
+- **[@typescript-package/descriptor](https://github.com/typescript-package/descriptor)**: A **TypeScript** library for property descriptor.
+- **[@typescript-package/descriptors](https://github.com/typescript-package/descriptors)**: A **TypeScript** library for property descriptors.
+- **[@typescript-package/property](https://github.com/typescript-package/property)**: A **TypeScript** package with features to handle object properties.
+- **[@typescript-package/wrap-descriptor](https://github.com/typescript-package/wrap-descriptor)**: A **TypeScript** package for wrapping object descriptors.
+- **[@typescript-package/wrap-property](https://github.com/typescript-package/wrap-property)**: A **TypeScript** package for wrapping object properties.
+- **[@typescript-package/wrapped-descriptor](https://github.com/typescript-package/wrapped-descriptor)**: A **TypeScript** library for wrapped property descriptor.
+- **[@xtypescript/property](https://github.com/xtypescript/property)** - A comprehensive, reactive **TypeScript** library for precise and extensible object property control.
 
 <!-- This package: typescript-package  -->
   <!-- GitHub: badges -->
