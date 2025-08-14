@@ -111,10 +111,10 @@ export class AccessorDescriptor<
    * @description Guards the `descriptor` to be an `object` of a `ThisAccessorPropertyDescriptor<V, O, C, E>` type.
    * @public
    * @static
-   * @template V 
-   * @template O 
-   * @template {boolean} [C=boolean] 
-   * @template {boolean} [E=boolean] 
+   * @template V The type of the value.
+   * @template O The type of the object.
+   * @template {boolean} [C=boolean] The type of the configurable.
+   * @template {boolean} [E=boolean] The type of the enumerable.
    * @param {ThisAccessorPropertyDescriptor<V, O, C, E>} descriptor The object of a `ThisAccessorPropertyDescriptor<V, O, C, E>` type to guard.
    * @param {?ValidationCallback<ThisAccessorPropertyDescriptor<V, O, C, E>>} [callbackFn] A `ValidationCallback` function to handle the result of the check whether or not the descriptor is an `object` containing the `get` or `set` property.
    * @returns {descriptor is ThisAccessorPropertyDescriptor<V, O, C, E>} The return value is a boolean indicating whether the `descriptor` is an `object` with the `get` or `set` property.
