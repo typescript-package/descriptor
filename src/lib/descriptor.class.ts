@@ -58,7 +58,7 @@ export class Descriptor<
     E extends boolean = boolean,
     W extends boolean = boolean
   >(
-    attributes: StrictPropertyDescriptor<V, O, C, E> = {},
+    attributes: StrictPropertyDescriptor<V, O, C, E, W> = {},
     object?: O,
     key?: K,
   ): Descriptor<O, K, V, C, E, W> {
@@ -79,14 +79,14 @@ export class Descriptor<
    * @template {boolean} [C=boolean] The type of the configurable.
    * @template {boolean} [E=boolean] The type of the enumerable.
    * @template {boolean} [W=boolean] The type of the writable.
-   * @param {StrictPropertyDescriptor<V, O, C, E>} [attributes={}] Data descriptor properties.
-   * @param {StrictPropertyDescriptor<V, O, C, E>} attributes.configurable The configurable property.
-   * @param {StrictPropertyDescriptor<V, O, C, E>} attributes.enumerable The enumerable property.
-   * @param {StrictPropertyDescriptor<V, O, C, E>} attributes.value The value for data descriptor.
-   * @param {StrictPropertyDescriptor<V, O, C, E>} attributes.writable The writable property.
+   * @param {StrictPropertyDescriptor<V, O, C, E, W>} [attributes={}] Data descriptor properties.
+   * @param {StrictPropertyDescriptor<V, O, C, E, W>} attributes.configurable The configurable property.
+   * @param {StrictPropertyDescriptor<V, O, C, E, W>} attributes.enumerable The enumerable property.
+   * @param {StrictPropertyDescriptor<V, O, C, E, W>} attributes.value The value for data descriptor.
+   * @param {StrictPropertyDescriptor<V, O, C, E, W>} attributes.writable The writable property.
    * @param {?O} [object] The object (non-stored) to define the descriptor on.
    * @param {?K} [key] The key (non-stored) to define the descriptor on.
-   * @returns {StrictPropertyDescriptor<V, O, C, E>} 
+   * @returns {StrictPropertyDescriptor<V, O, C, E, W>} 
    */
   public static define<
     O = any,
@@ -96,17 +96,17 @@ export class Descriptor<
     E extends boolean = boolean,
     W extends boolean = boolean
   >(
-    attributes: StrictPropertyDescriptor<V, O, C, E> = {},
+    attributes: StrictPropertyDescriptor<V, O, C, E, W> = {},
     object?: O,
     key?: K,
-  ): StrictPropertyDescriptor<V, O, C, E> {
+  ): StrictPropertyDescriptor<V, O, C, E, W> {
     return {
       ...this.create<O, K, V, C, E, W>(
         attributes,
         object,
         key,
       )
-    } as StrictPropertyDescriptor<V, O, C, E>;
+    } as StrictPropertyDescriptor<V, O, C, E, W>;
   }
 
   /**
@@ -239,11 +239,11 @@ export class Descriptor<
    * @description Picks the descriptors of the specified keys from the `object`.
    * @public
    * @static
-   * @template O 
-   * @template {keyof O} K 
-   * @param {O} object 
-   * @param {...K[]} keys 
-   * @returns {Pick<ObjectPropertyDescriptors<O>, K>} 
+   * @template O The type of object.
+   * @template {keyof O} K The type of object key.
+   * @param {O} object The object to pick the descriptors from.
+   * @param {...K[]} keys The keys of the descriptors to pick.
+   * @returns {Pick<ObjectPropertyDescriptors<O>, K>} The picked descriptors.
    */
   public static pick<O, K extends keyof O>(
     object: O,
@@ -319,18 +319,18 @@ export class Descriptor<
   /**
    * Creates an instance of `Descriptor`.
    * @constructor
-   * @param {StrictPropertyDescriptor<V, O, C, E>} [param0={}] The attributes of the descriptor.
-   * @param {StrictPropertyDescriptor<V, O, C, E>} param0.configurable The configurable property.
-   * @param {StrictPropertyDescriptor<V, O, C, E>} param0.enumerable The enumerable property.
-   * @param {StrictPropertyDescriptor<V, O, C, E>} param0.get The getter function.
-   * @param {StrictPropertyDescriptor<V, O, C, E>} param0.set The setter function.
-   * @param {StrictPropertyDescriptor<V, O, C, E>} param0.writable The writable property.
-   * @param {StrictPropertyDescriptor<V, O, C, E>} param0.value The value property.
+   * @param {StrictPropertyDescriptor<V, O, C, E, W>} [param0={}] The attributes of the descriptor.
+   * @param {StrictPropertyDescriptor<V, O, C, E, W>} param0.configurable The configurable property.
+   * @param {StrictPropertyDescriptor<V, O, C, E, W>} param0.enumerable The enumerable property.
+   * @param {StrictPropertyDescriptor<V, O, C, E, W>} param0.get The getter function.
+   * @param {StrictPropertyDescriptor<V, O, C, E, W>} param0.set The setter function.
+   * @param {StrictPropertyDescriptor<V, O, C, E, W>} param0.writable The writable property.
+   * @param {StrictPropertyDescriptor<V, O, C, E, W>} param0.value The value property.
    * @param {?O} [object] The object (non-stored) to define the descriptor on. The object is optional, if not provided the descriptor will be created without an object.
    * @param {?K} [key] The key (non-stored) of the property to define the descriptor on.
    */
   constructor(
-    {configurable, enumerable, get, set, value, writable}: StrictPropertyDescriptor<V, O, C, E> = {},
+    {configurable, enumerable, get, set, value, writable}: StrictPropertyDescriptor<V, O, C, E, W> = {},
     object?: O,
     key?: K
   ) {
@@ -339,10 +339,10 @@ export class Descriptor<
     // Deletes the PropertyDescriptor properties.
     delete this.get, delete this.set, delete this.value, delete this.writable;
 
-    get && (this.get = get);
-    set && (this.set = set);
+    'get' in arguments[0] && (this.get = get);
+    'set' in arguments[0] && (this.set = set);
 
-    value && (this.value = value);
-    writable && (this.writable = writable as W);
+    'value' in arguments[0] && (this.value = value);
+    'writable' in arguments[0] && (this.writable = writable);
   }
 }
