@@ -48,11 +48,13 @@ A **lightweight** TypeScript library for property descriptor.
 
 ## Installation
 
-Install peer dependencies
+### 1. Install peer dependencies
 
 ```bash
 npm install @typedly/callback @typedly/descriptor  --save-peer
 ```
+
+### 2. Install the package
 
 ```bash
 npm install @typescript-package/descriptor --save-peer
