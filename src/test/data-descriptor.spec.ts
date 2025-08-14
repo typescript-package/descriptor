@@ -1,6 +1,6 @@
 import { DataDescriptor } from "../lib";
 
-const descriptor = new DataDescriptor();
+const descriptor = new DataDescriptor({});
 const object = {};
 
 console.group(`DataDescriptor`);

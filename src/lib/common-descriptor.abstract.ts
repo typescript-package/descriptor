@@ -1,10 +1,20 @@
-/**
- * @description
+// Interface.
+import { CommonPropertyDescriptor } from "@typedly/descriptor";
+ /**
+ * @description The common properties for descriptors.
  * @export
  * @abstract
  * @class CommonDescriptor
+ * @template {boolean} [C=boolean] The type of configurable property.
+ * @template {boolean} [E=boolean] The type of enumerable property.
+ * @implements {Pick<PropertyDescriptor, 'configurable' | 'enumerable'>}
  */
-export abstract class CommonDescriptor {
+export abstract class CommonDescriptor<
+  // Configurable.
+  C extends boolean = boolean,
+  // Enumerable.
+  E extends boolean = boolean
+> implements Pick<PropertyDescriptor, 'configurable' | 'enumerable'> {
   /**
    * @description The default value for configurable.
    * @public
@@ -24,38 +34,38 @@ export abstract class CommonDescriptor {
 
   //#region Property descriptor
   /**
-   * @description
+   * @description The configurable property.
    * @public
-   * @type {?boolean}
+   * @type {?C}
    */
-  public configurable?: boolean;
+  public configurable?: C;
 
   /**
-   * @description
+   * @description The enumerable property.
    * @public
-   * @type {?boolean}
+   * @type {?E}
    */
-  public enumerable?: boolean;
+  public enumerable?: E;
   //#endregion
 
   /**
-   * Creates an instance of child class.
+   * Creates an instance of `CommonDescriptor` child class.
    * @constructor
-   * @param {Pick<PropertyDescriptor, 'configurable' | 'enumerable'>} [param0={}] 
-   * @param {Pick<PropertyDescriptor, "configurable" | "enumerable">} param0.configurable 
-   * @param {Pick<PropertyDescriptor, "configurable" | "enumerable">} param0.enumerable 
+   * @param {CommonPropertyDescriptor<C, E>} [param0={}] Object containing configurable and enumerable properties.
+   * @param {CommonPropertyDescriptor<C, E>} param0.configurable The configurable property. Defaults to static configurable value.
+   * @param {CommonPropertyDescriptor<C, E>} param0.enumerable The enumerable property. Defaults to static enumerable value.
    */
   constructor(
-    { configurable, enumerable }: Pick<PropertyDescriptor, 'configurable' | 'enumerable'>  = {},
+    { configurable, enumerable }: CommonPropertyDescriptor<C, E>  = {},
   ) {
     delete this.configurable, delete this.enumerable;
 
     typeof configurable === 'boolean'
     ? (this.configurable = configurable)
-    : typeof CommonDescriptor.configurable === 'boolean' && (this.configurable = CommonDescriptor.configurable);
+    : typeof CommonDescriptor.configurable === 'boolean' && (this.configurable = CommonDescriptor.configurable as C);
 
     typeof enumerable === 'boolean'
     ? (this.enumerable = enumerable)
-    : typeof CommonDescriptor.enumerable === 'boolean' && (this.enumerable = CommonDescriptor.enumerable);
+    : typeof CommonDescriptor.enumerable === 'boolean' && (this.enumerable = CommonDescriptor.enumerable as E);
   }
 }

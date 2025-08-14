@@ -9,8 +9,8 @@
     "registry": "https://registry.npmjs.org"
   },
   "peerDependencies": {
-    "@typedly/callback": "^1.0.0-beta.4",
-    "@typedly/descriptor": "^2.0.0"
+    "@typedly/callback": "^1.0.0",
+    "@typedly/descriptor": "^10.0.0"
   },
   "scripts": {
     "prepublishOnly": "npm run pkg && npm run clean",
@@ -30,9 +30,7 @@
     "AccessorDescriptor",
     "CommonDescriptor",
     "DataDescriptor",
-    "Descriptor",
-    "Descriptors",
-    "PropertyDescriptorChain"
+    "Descriptor"
   ],
   "funding": [
     {

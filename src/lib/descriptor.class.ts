@@ -6,63 +6,190 @@ import { DataDescriptor } from './data-descriptor.class';
 // Interface.
 import { DataPropertyDescriptor } from '@typedly/descriptor';
 // Type.
-import { AnyPropertyDescriptor } from '@typedly/descriptor';
-import { ObjectPropertyDescriptors } from '@typedly/descriptor';
-import { ValidationCallback } from '@typedly/callback';
+import { ObjectPropertyDescriptors, StrictPropertyDescriptor } from '@typedly/descriptor';
 import { ThisAccessorPropertyDescriptor } from '@typedly/descriptor';
+import { ValidationCallback } from '@typedly/callback';
 /**
- * @description
+ * @description The `Descriptor` class is a concrete implementation of the `CommonDescriptor` class that represents a property descriptor.
  * @export
  * @class Descriptor
- * @template {object} [Obj=object] 
- * @template {keyof Obj} [PropertyName=keyof Obj] 
- * @template [Value=Obj[PropertyName]] 
+ * @template [O=any] The type of the object.
+ * @template {PropertyKey | keyof O} [K=keyof O] The type of the key.
+ * @template {K extends keyof O ? O[K] : any} [V=K extends keyof O ? O[K] : any] The type of the value.
+ * @template {boolean} [C=boolean] The type of the configurable flag.
+ * @template {boolean} [E=boolean] The type of the enumerable flag.
+ * @template {boolean} [W=boolean] The type of the writable flag.
+ * @extends {CommonDescriptor<C, E>}
  */
 export class Descriptor<
-  Obj extends object = object,
-  PropertyName extends keyof Obj = keyof Obj,
-  Value = Obj[PropertyName],
-> extends CommonDescriptor {
+  // Object. `any` for proper type capturing by `V`.
+  O = any,
+  // Key.
+  K extends PropertyKey | keyof O = keyof O,
+  // Value.
+  V extends K extends keyof O ? O[K] : any = K extends keyof O ? O[K] : any,
+  // Configurable.
+  C extends boolean = boolean,
+  // Enumerable.
+  E extends boolean = boolean,
+  // Writable.
+  W extends boolean = boolean
+> extends CommonDescriptor<C, E> {
   /**
-   * @description Returns accessor descriptor of a `ThisAccessorPropertyDescriptor<Value, Obj>` type, on `get` or `set` property detected.
-   * @param descriptor An `object` of a `ThisAccessorPropertyDescriptor<Value, Obj>` type, to define with the default values of the
-   * `CommonDescriptor`.
-   * @param onValidate An optional `ValidationCallback` function to handle the result of the check whether or not the `descriptor` is an
-   * `object` with `get` or `set` property, by default it uses  `accessorCallback()` function from the `guard`.
-   * @throws Throws an `Error` if the `descriptor` is not an `object` of a `ThisAccessorPropertyDescriptor<Value, Obj>` type,
-   * which means it doesn't contain `get` or `set` property.
-   * @returns The return value is an `object` of a `ThisAccessorPropertyDescriptor<Value, Obj>` type.
+   * @description Creates an instance of `Descriptor`.
+   * @public
+   * @static
+   * @template [O=any] The type of the object.
+   * @template {PropertyKey | keyof O} [K=keyof O] The type of the key.
+   * @template {K extends keyof O ? O[K] : any} [V=K extends keyof O ? O[K] : any] The type of the value.
+   * @template {boolean} [C=boolean] The type of the configurable flag.
+   * @template {boolean} [E=boolean] The type of the enumerable flag.
+   * @template {boolean} [W=boolean] The type of the writable flag.
+   * @param {StrictPropertyDescriptor<V, O, C, E>} [attributes={}] The type of the descriptor.
+   * @param {?O} [object] The object (non-stored) to define the descriptor on. The object is optional, if not provided the descriptor will be created without an object.
+   * @param {?K} [key] The key (non-stored) to define the descriptor on. The key is optional, if not provided the descriptor will be created without a key.
+   * @returns {Descriptor<O, K, V, C, E, W>} 
    */
-  public static defineAccessor<Value, Obj extends object>(
-    descriptor: ThisAccessorPropertyDescriptor<Value, Obj>,
-    onValidate?: ValidationCallback
-  ): ThisAccessorPropertyDescriptor<Value, Obj> | undefined {
-    return AccessorDescriptor.define(descriptor, onValidate);
+  public static create<
+    O = any,
+    K extends PropertyKey | keyof O = keyof O,
+    V extends K extends keyof O ? O[K] : any = K extends keyof O ? O[K] : any,
+    C extends boolean = boolean,
+    E extends boolean = boolean,
+    W extends boolean = boolean
+  >(
+    attributes: StrictPropertyDescriptor<V, O, C, E, W> = {},
+    object?: O,
+    key?: K,
+  ): Descriptor<O, K, V, C, E, W> {
+    return new Descriptor<O, K, V, C, E, W>(
+      attributes,
+      object,
+      key
+    );    
+  }
+  
+  /**
+   * @description Creates an instance of `Descriptor`.
+   * @public
+   * @static
+   * @template [O=any] The type of the object.
+   * @template {PropertyKey | keyof O} [K=keyof O] The type of the key.
+   * @template {K extends keyof O ? O[K] : any} [V=K extends keyof O ? O[K] : any] The type of the value.
+   * @template {boolean} [C=boolean] The type of the configurable.
+   * @template {boolean} [E=boolean] The type of the enumerable.
+   * @template {boolean} [W=boolean] The type of the writable.
+   * @param {StrictPropertyDescriptor<V, O, C, E, W>} [attributes={}] Data descriptor properties.
+   * @param {StrictPropertyDescriptor<V, O, C, E, W>} attributes.configurable The configurable property.
+   * @param {StrictPropertyDescriptor<V, O, C, E, W>} attributes.enumerable The enumerable property.
+   * @param {StrictPropertyDescriptor<V, O, C, E, W>} attributes.value The value for data descriptor.
+   * @param {StrictPropertyDescriptor<V, O, C, E, W>} attributes.writable The writable property.
+   * @param {?O} [object] The object (non-stored) to define the descriptor on.
+   * @param {?K} [key] The key (non-stored) to define the descriptor on.
+   * @returns {StrictPropertyDescriptor<V, O, C, E, W>} 
+   */
+  public static define<
+    O = any,
+    K extends PropertyKey | keyof O = keyof O,
+    V extends K extends keyof O ? O[K] : any = K extends keyof O ? O[K] : any,
+    C extends boolean = boolean,
+    E extends boolean = boolean,
+    W extends boolean = boolean
+  >(
+    attributes: StrictPropertyDescriptor<V, O, C, E, W> = {},
+    object?: O,
+    key?: K,
+  ): StrictPropertyDescriptor<V, O, C, E, W> {
+    return {
+      ...this.create<O, K, V, C, E, W>(
+        attributes,
+        object,
+        key,
+      )
+    } as StrictPropertyDescriptor<V, O, C, E, W>;
+  }
+
+  /**
+   * @description Returns accessor descriptor of a `ThisAccessorPropertyDescriptor<V, O, C, E>` type, on `get` or `set` property detected.
+   * @public
+   * @static
+   * @template [O=any] The type of the object.
+   * @template {PropertyKey | keyof O} [K=keyof O] The type of the object key.
+   * @template {K extends keyof O ? O[K] : any} [V=K extends keyof O ? O[K] : any] The type of the value.
+   * @template {boolean} [C=boolean] The type of configurable.
+   * @template {boolean} [E=boolean] The type of enumerable.
+   * @param {ThisAccessorPropertyDescriptor<V, O, C, E>} param0 The accessor descriptor attributes.
+   * @param {ThisAccessorPropertyDescriptor<V, O, C, E>} param0.configurable The configurable property.
+   * @param {ThisAccessorPropertyDescriptor<V, O, C, E>} param0.enumerable The enumerable property.
+   * @param {ThisAccessorPropertyDescriptor<V, O, C, E>} param0.get The getter function.
+   * @param {ThisAccessorPropertyDescriptor<V, O, C, E>} param0.set The setter function.
+   * @param {?O} [object] The object (non-stored) to define the descriptor on.
+   * @param {?K} [key] The key (non-stored) to define the descriptor on.
+   * @param {?ValidationCallback<ThisAccessorPropertyDescriptor<V, O, C, E>>} [onValidate] 
+   * @returns {(ThisAccessorPropertyDescriptor<V, O, C, E> | undefined)} 
+   */
+  public static defineAccessor<
+    O = any,
+    K extends PropertyKey | keyof O = keyof O,
+    V extends K extends keyof O ? O[K] : any = K extends keyof O ? O[K] : any, 
+    C extends boolean = boolean,
+    E extends boolean = boolean
+  >(
+    {configurable, enumerable, get, set}: ThisAccessorPropertyDescriptor<V, O, C, E>,
+    object?: O,
+    key?: K,
+    onValidate?: ValidationCallback<ThisAccessorPropertyDescriptor<V, O, C, E>>
+  ): ThisAccessorPropertyDescriptor<V, O, C, E> | undefined {
+    return AccessorDescriptor.define<O, K, V, C, E>({ configurable, enumerable, get, set }, object, key, onValidate);
   }
 
   /**
    * @description Returns data descriptor of a `DataPropertyDescriptor<Value>` interface, on `writable` or `value` property detected.
-   * @param descriptor An `object` of a `DataPropertyDescriptor<Value>` interface, to set with the default values of the
-   * `CommonDescriptor`.
-   * @param onValidate An optional `ValidationCallback` function to handle the result of the check whether or not the `descriptor` is an `object`
-   * with the `writable` or `value` property, by default it uses `dataCallback()` function from the static `DataPropertyDescriptors.guard()` method.
-   * @returns The return value is an `object` of a `DataPropertyDescriptor<Value>` interface.
+   * @public
+   * @static
+   * @template [O=any] The type of the object.
+   * @template {PropertyKey | keyof O} [K=keyof O] The type of the object key.
+   * @template [V=K extends keyof O ? O[K] : any] The type of the value.
+   * @template {boolean} [C=boolean] The type of configurable.
+   * @template {boolean} [E=boolean] The type of enumerable.
+   * @template {boolean} [W=boolean] The type of writable.
+   * @param {DataPropertyDescriptor<V, C, E, W>} param0 An `object` of a `DataPropertyDescriptor<Value>` interface, to set with the default values of the `CommonDescriptor`.
+   * @param {DataPropertyDescriptor<V, C, E, W>} param0.configurable The configurable property.
+   * @param {DataPropertyDescriptor<V, C, E, W>} param0.enumerable The enumerable property.
+   * @param {DataPropertyDescriptor<V, C, E, W>} param0.value The value property.
+   * @param {DataPropertyDescriptor<V, C, E, W>} param0.writable The writable property.
+   * @param {?O} [object] The object (non-stored) to define the descriptor on.
+   * @param {?K} [key] The key (non-stored) to define the descriptor on.
+   * @param {?ValidationCallback<DataPropertyDescriptor<V, C, E, W>>} [onValidate] An optional `ValidationCallback` function to handle the result of the check whether or not the `descriptor` is an `object` with the `writable` or `value` property.
+   * @returns {(DataPropertyDescriptor<V, C, E, W> | undefined)} 
    */
-  public static defineData<Value>(
-    descriptor: DataPropertyDescriptor<Value>,
-    onValidate?: ValidationCallback
-  ): DataPropertyDescriptor<Value> | undefined {
-    return DataDescriptor.define(descriptor, onValidate);
+  public static defineData<
+    O = any,
+    K extends PropertyKey | keyof O = keyof O,
+    V = K extends keyof O ? O[K] : any,
+    C extends boolean = boolean,
+    E extends boolean = boolean,
+    W extends boolean = boolean
+  >(
+    {configurable, enumerable, value, writable}: DataPropertyDescriptor<V, C, E, W>,
+    object?: O,
+    key?: K,
+    onValidate?: ValidationCallback<DataPropertyDescriptor<V, C, E, W>>
+  ): DataPropertyDescriptor<V, C, E, W> | undefined {
+    return DataDescriptor.define<O, K, V, C, E, W>({configurable, enumerable, writable, value}, object, key, onValidate);
   }
 
   /**
    * @description Returns property descriptors from the specified object and its prototype.
-   * @param object An `object` of a generic `Obj` type to get property descriptors.
-   * @returns The return value is an `object` of a `ObjectPropertyDescriptors<Obj>` type.
+   * @public
+   * @static
+   * @template O The type of the object.
+   * @param {O} object An `object` of a generic `Obj` type to get property descriptors.
+   * @returns {(ObjectPropertyDescriptors<O> | undefined)} The return value is an `object` of a `ObjectPropertyDescriptors<O> | undefined` type.
    */
-  public static fromObject<Obj extends object>(
-    object: Obj
-  ): ObjectPropertyDescriptors<Obj> | undefined {
+  public static fromObject<O>(
+    object: O
+  ): ObjectPropertyDescriptors<O> | undefined {
     return {
       ...Object.getOwnPropertyDescriptors(Object.getPrototypeOf(object)) || {}, // ['__proto__'] equivalent to getPrototypeOf()
       ...Object.getOwnPropertyDescriptors(object) || {},
@@ -70,16 +197,23 @@ export class Descriptor<
   }
 
   /**
-   * Returns property descriptor from the `object` or `class` prototype.
+   * @description Returns property descriptor from the `object` or `class` prototype.
    * Wrapper function for the `getOwnPropertyDescriptor`, which "Gets the own property descriptor of the specified object."
    * @param object An `object` of a generic `Obj` type or a class to get own property descriptor with the specified `key`.
    * If `class` is provided then it uses its prototype to get the property descriptor.
    * @param key A `keyof Obj` value to get property descriptor from the `object`.
    * @returns The return value is an `object` of a `PropertyDescriptor` interface or an `undefined`.
+   * @example
+   * // Useful here.
+   * class A {
+   *  get foo() { return "foo"; }
+   * }
+   * const a = new A();
+   * Descriptor.fromProperty(a, 'foo'); // {set: undefined, enumerable: false, configurable: true, get: ƒ}
    */
-  public static fromProperty<Obj extends object, Key extends keyof Obj>(
-    object: Obj,
-    key: Key
+  public static fromProperty<O, K extends keyof O>(
+    object: O,
+    key: K,
   ): PropertyDescriptor | undefined {
     return (
       Object.getOwnPropertyDescriptor(object, key) ||
@@ -90,37 +224,33 @@ export class Descriptor<
   /**
    * @alias fromProperty()
    */
-  public static get<Obj extends object, Name extends keyof Obj>(
-    object: Obj,
-    name: Name
-  ): PropertyDescriptor | undefined {
-    return this.fromProperty(object, name);
+  public static get<O, K extends keyof O>(object: O, key: K): PropertyDescriptor | undefined {
+    return this.fromProperty(object, key);
   }
 
   /**
    * @alias fromObject()
    */
-  public static getAll<Obj extends object>(
-    object: Obj
-  ): ObjectPropertyDescriptors<Obj> | undefined {
+  public static getAll<O>(object: O): ObjectPropertyDescriptors<O> | undefined {
     return this.fromObject(object);
   }
 
   /**
-   *
-   * @param object
-   * @param names
-   * @returns
+   * @description Picks the descriptors of the specified keys from the `object`.
+   * @public
+   * @static
+   * @template O The type of object.
+   * @template {keyof O} K The type of object key.
+   * @param {O} object The object to pick the descriptors from.
+   * @param {...K[]} keys The keys of the descriptors to pick.
+   * @returns {Pick<ObjectPropertyDescriptors<O>, K>} The picked descriptors.
    */
-  public static pick<Obj extends object | Function, Names extends keyof Obj>(
-    object: Obj,
-    ...names: Names[]
-  ): Pick<ObjectPropertyDescriptors<Obj>, Names> {
+  public static pick<O, K extends keyof O>(
+    object: O,
+    ...keys: K[]
+  ): Pick<ObjectPropertyDescriptors<O>, K> {
     // Prepare constant to assign descriptors of picked keys.
-    const pickedDescriptors: Pick<
-      ObjectPropertyDescriptors<Obj>,
-      Names
-    > = {} as any;
+    const result: Pick<ObjectPropertyDescriptors<O>, K> = {} as any;
 
     // Get all descriptors.
     const descriptors = this.getAll(object);
@@ -128,33 +258,13 @@ export class Descriptor<
     // If descriptors exists then set picked descriptor into the map storage.
     typeof descriptors === 'object' &&
       Object.keys(descriptors)
-        .filter(key => names.includes(key as any))
+        .filter(key => keys.includes(key as any))
         .forEach(key =>
-          Object.assign(pickedDescriptors, {
+          Object.assign(result, {
             [key]: descriptors[key],
           })
         );
-    return pickedDescriptors;
-  }
-
-  /**
-   * The static getter accessor to define `accessor` and `data` descriptor.
-   * @returns The returned value is an `object` with `accessor` and `data` properties.
-   */
-  public static get define(): {
-    accessor: <Value, Obj extends object>(
-      descriptor: ThisAccessorPropertyDescriptor<Value, Obj>,
-      callback?: ValidationCallback
-    ) => ThisAccessorPropertyDescriptor<Value, Obj> | undefined,
-    data: <Value>(
-      descriptor: DataPropertyDescriptor<Value>,
-      callback?: ValidationCallback
-    ) => DataPropertyDescriptor<Value> | undefined
-  } {
-    return {
-      accessor: this.defineAccessor,
-      data: this.defineData
-    }
+    return result;
   }
 
   /**
@@ -162,12 +272,12 @@ export class Descriptor<
    * @returns The returned value is an `object` with `object` and `property` properties.
    */
   public static get from(): {
-    object: <Obj extends object>(
-      object: Obj
-    ) => ObjectPropertyDescriptors<Obj> | undefined,
-    property: <Obj extends object, Name extends keyof Obj>(
-      object: Obj,
-      name: Name
+    object: <O>(
+      object: O
+    ) => ObjectPropertyDescriptors<O> | undefined,
+    property: <O, K extends keyof O>(
+      object: O,
+      key: K
     ) => PropertyDescriptor | undefined,
   } {
     return {
@@ -178,61 +288,61 @@ export class Descriptor<
 
   //#region Property descriptor
   /**
-   * @description
+   * @description The configurable property.
    * @public
-   * @type {?() => Value}
+   * @type {?() => V}
    */
-  public get?: () => Value;
+  public get?: () => V;
 
   /**
    * @description
    * @public
-   * @type {?(value: Value) => void}
+   * @type {?(value: V) => void}
    */
-  public set?: (value: Value) => void;
+  public set?: (value: V) => void;
 
   /**
-   * @description
+   * @description The value property.
    * @public
-   * @type {?Value}
+   * @type {?V}
    */
-  public value?: Value;
+  public value?: V;
 
   /**
-   * @description
+   * @description The writable property.
    * @public
-   * @type {?boolean}
+   * @type {?W}
    */
-  public writable?: boolean;
+  public writable?: W;
   //#endregion
 
   /**
    * Creates an instance of `Descriptor`.
    * @constructor
-   * @param {AnyPropertyDescriptor<Value, Obj>} [param0={}] 
-   * @param {AnyPropertyDescriptor<Value, Obj>} param0.configurable 
-   * @param {AnyPropertyDescriptor<Value, Obj>} param0.enumerable 
-   * @param {AnyPropertyDescriptor<Value, Obj>} param0.get 
-   * @param {AnyPropertyDescriptor<Value, Obj>} param0.set 
-   * @param {AnyPropertyDescriptor<Value, Obj>} param0.value 
-   * @param {AnyPropertyDescriptor<Value, Obj>} param0.writable 
-   * @param {?Obj} [object] 
-   * @param {?PropertyName} [key] 
+   * @param {StrictPropertyDescriptor<V, O, C, E, W>} [param0={}] The attributes of the descriptor.
+   * @param {StrictPropertyDescriptor<V, O, C, E, W>} param0.configurable The configurable property.
+   * @param {StrictPropertyDescriptor<V, O, C, E, W>} param0.enumerable The enumerable property.
+   * @param {StrictPropertyDescriptor<V, O, C, E, W>} param0.get The getter function.
+   * @param {StrictPropertyDescriptor<V, O, C, E, W>} param0.set The setter function.
+   * @param {StrictPropertyDescriptor<V, O, C, E, W>} param0.writable The writable property.
+   * @param {StrictPropertyDescriptor<V, O, C, E, W>} param0.value The value property.
+   * @param {?O} [object] The object (non-stored) to define the descriptor on. The object is optional, if not provided the descriptor will be created without an object.
+   * @param {?K} [key] The key (non-stored) of the property to define the descriptor on.
    */
   constructor(
-    { configurable, enumerable, get, set ,value, writable }: AnyPropertyDescriptor<Value, Obj> = {},
-    object?: Obj,
-    key?: PropertyName
+    {configurable, enumerable, get, set, value, writable}: StrictPropertyDescriptor<V, O, C, E, W> = {},
+    object?: O,
+    key?: K
   ) {
-    super({ configurable, enumerable });
+    super({configurable, enumerable});
 
     // Deletes the PropertyDescriptor properties.
     delete this.get, delete this.set, delete this.value, delete this.writable;
 
-    get && (this.get = get);
-    set && (this.set = set);
+    'get' in arguments[0] && (this.get = get);
+    'set' in arguments[0] && (this.set = set);
 
-    value && (this.value = value);
-    writable && (this.writable = writable);
+    'value' in arguments[0] && (this.value = value);
+    'writable' in arguments[0] && (this.writable = writable);
   }
 }

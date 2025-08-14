@@ -3,7 +3,7 @@
   <img
     src="https://raw.githubusercontent.com/typescript-package/core/refs/heads/main/ts-package-barcode-logo-512.png"
     width="20%"
-    title="@typescript-package/descriptor"
+    title="@typescript-package/descriptor - A lightweight TypeScript library for property descriptor."
   />
 </a>
 
@@ -14,28 +14,47 @@
 [![GitHub issues][typescript-package-badge-issues]][typescript-package-issues]
 [![GitHub license][typescript-package-badge-license]][typescript-package-license]
 
-**Version:** v1.0.0-beta
-
 A **lightweight** TypeScript library for property descriptor.
+
+## Features
+
+- Create the accessor descriptors for object properties with the `AccessorDescriptor` class.
+- Create the data descriptors for object properties with the `DataDescriptor` class.
+- Create accessor or data descriptor for object properties with `Descriptor` class.
+
+## Note
+
+- `Descriptors` moved to the [`@typescript-package/descriptors`](https://github.com/typescript-package/descriptors).
+- `PropertyDescriptorChain` moved to the [`@typescript-package/descriptor-chain`](https://github.com/typescript-package/descriptor-chain).
 
 ## Table of contents
 
 - [Installation](#installation)
 - [Api](#api)
-  - `AccessorDescriptor`
-  - `CommonDescriptor`
-  - `DataDescriptor`
-  - `Descriptor`
-  - `Descriptors`
-  - `PropertyDescriptorChain`
+  - Abstract
+    - `CommonDescriptor`
+  - Class
+    - `AccessorDescriptor`
+    - `DataDescriptor`
+    - `Descriptor`
 - [Contributing](#contributing)
+- [Support](#support)
 - [Code of Conduct](code-of-conduct)
 - [Git](#git)
   - [Commit](#commit)
   - [Versioning](#versioning)
 - [License](#license)
+- [Related packages](#related-packages)
 
 ## Installation
+
+### 1. Install peer dependencies
+
+```bash
+npm install @typedly/callback @typedly/descriptor  --save-peer
+```
+
+### 2. Install the package
 
 ```bash
 npm install @typescript-package/descriptor --save-peer
@@ -47,18 +66,37 @@ npm install @typescript-package/descriptor --save-peer
 import {
   // Abstract.
   CommonDescriptor,
+
   // Class.
   AccessorDescriptor,
   DataDescriptor,
   Descriptor,
-  Descriptors,
-  PropertyDescriptorChain,
 } from '@typescript-package/descriptor';
 ```
 
 ## Contributing
 
-Your contributions are **valued**! If you'd like to contribute, please feel **free** to submit a pull request. Help is always appreciated.
+Your contributions are valued! If you'd like to contribute, please feel free to submit a pull request. Help is always appreciated.
+
+## Support
+
+If you find this package useful and would like to support its and general development, you can contribute through one of the following payment methods. Your support helps maintain the packages and continue adding new.
+
+Support via:
+
+- [Stripe](https://donate.stripe.com/dR614hfDZcJE3wAcMM)
+- [Revolut](https://checkout.revolut.com/pay/048b10a3-0e10-42c8-a917-e3e9cb4c8e29)
+- [GitHub](https://github.com/sponsors/angular-package/sponsorships?sponsor=sciborrudnicki&tier_id=83618)
+- [DonorBox](https://donorbox.org/become-a-sponsor-to-the-angular-package?default_interval=o)
+- [Patreon](https://www.patreon.com/checkout/angularpackage?rid=0&fan_landing=true&view_as=public)
+
+or via Trust Wallet
+
+- [XLM](https://link.trustwallet.com/send?coin=148&address=GAFFFB7H3LG42O6JA63FJDRK4PP4JCNEOPHLGLLFH625X2KFYQ4UYVM4)
+- [USDT (BEP20)](https://link.trustwallet.com/send?coin=20000714&address=0xA0c22A2bc7E37C1d5992dFDFFeD5E6f9298E1b94&token_id=0x55d398326f99059fF775485246999027B3197955)
+- [ETH](https://link.trustwallet.com/send?coin=60&address=0xA0c22A2bc7E37C1d5992dFDFFeD5E6f9298E1b94)
+- [BTC](https://link.trustwallet.com/send?coin=0&address=bc1qnf709336tfl57ta5mfkf4t9fndhx7agxvv9svn)
+- [BNB](https://link.trustwallet.com/send?coin=20000714&address=0xA0c22A2bc7E37C1d5992dFDFFeD5E6f9298E1b94)
 
 ## Code of Conduct
 
@@ -98,6 +136,19 @@ How do I know when to release 1.0.0?
 ## License
 
 MIT © typescript-package ([license][typescript-package-license])
+
+## Related packages
+
+- **[@typescript-package/chain-descriptor](https://github.com/typescript-package/chain-descriptor)**: A **TypeScript** library for chain property descriptor.
+- **[@typescript-package/controller](https://github.com/typescript-package/controller)**: A **TypeScript** package with for various kind of controllers.
+- **[@typescript-package/descriptor](https://github.com/typescript-package/descriptor)**: A **TypeScript** library for property descriptor.
+- **[@typescript-package/descriptor-chain](https://github.com/typescript-package/descriptor-chain)**: A **TypeScript** library for property descriptor chain.
+- **[@typescript-package/descriptors](https://github.com/typescript-package/descriptors)**: A **TypeScript** library for property descriptors.
+- **[@typescript-package/property](https://github.com/typescript-package/property)**: A **TypeScript** package with features to handle object properties.
+- **[@typescript-package/wrap-descriptor](https://github.com/typescript-package/wrap-descriptor)**: A **TypeScript** package for wrapping object descriptors.
+- **[@typescript-package/wrap-property](https://github.com/typescript-package/wrap-property)**: A **TypeScript** package for wrapping object properties.
+- **[@typescript-package/wrapped-descriptor](https://github.com/typescript-package/wrapped-descriptor)**: A **TypeScript** library for wrapped property descriptor.
+- **[@xtypescript/property](https://github.com/xtypescript/property)** - A comprehensive, reactive **TypeScript** library for precise and extensible object property control.
 
 <!-- This package: typescript-package  -->
   <!-- GitHub: badges -->
