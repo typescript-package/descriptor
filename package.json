@@ -1,6 +1,6 @@
 {
   "name": "@typescript-package/descriptor",
-  "version": "1.0.0",
+  "version": "1.1.0",
   "author": "wwwdev.io <dev@wwwdev.io>",
   "description": "A lightweight TypeScript library for property descriptor.",
   "license": "MIT",
@@ -10,7 +10,7 @@
   },
   "peerDependencies": {
     "@typedly/callback": "^1.0.0",
-    "@typedly/descriptor": "^10.0.0"
+    "@typedly/descriptor": "^10.1.1"
   },
   "scripts": {
     "prepublishOnly": "npm run pkg && npm run clean",
